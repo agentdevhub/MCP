@@ -1,22 +1,21 @@
 ---
-title: Introduction
-description: 'Get started with the Model Context Protocol (MCP)'
+title: 简介
+description: Model Context Protocol (MCP) 入门指南
+
 ---
 
-<Note>C# SDK released! Check out [what else is new.](/development/updates)</Note>
+<Note>C# SDK 已发布！立即查看[最新动态](/development/updates)</Note>
 
-MCP is an open protocol that standardizes how applications provide context to LLMs. Think of MCP like a USB-C port for AI applications. Just as USB-C provides a standardized way to connect your devices to various peripherals and accessories, MCP provides a standardized way to connect AI models to different data sources and tools.
 
-## Why MCP?
 
-MCP helps you build agents and complex workflows on top of LLMs. LLMs frequently need to integrate with data and tools, and MCP provides:
-- A growing list of pre-built integrations that your LLM can directly plug into
-- The flexibility to switch between LLM providers and vendors
-- Best practices for securing your data within your infrastructure
+MCP 是一个开放协议，旨在标准化应用程序为LLMs提供上下文的方式。您可以将MCP视为AI应用的USB-C接口——正如USB-C为设备连接外设提供了标准化方案，MCP则为AI模型对接各类数据源和工具提供了统一范式。
 
-### General architecture
+## 为什么选择MCP？
+MCP帮助您在LLMs之上构建智能体和复杂工作流。当LLMs需要整合数据和工具时，MCP提供：
 
-At its core, MCP follows a client-server architecture where a host application can connect to multiple servers:
+- 持续增长的预构建集成方案，实现LLM即插即用
+
+- 灵活切换不同LLM服务商的自由选择
 
 ```mermaid
 flowchart LR
@@ -36,149 +35,149 @@ flowchart LR
     end
 ```
 
-- **MCP Hosts**: Programs like Claude Desktop, IDEs, or AI tools that want to access data through MCP
-- **MCP Clients**: Protocol clients that maintain 1:1 connections with servers
-- **MCP Servers**: Lightweight programs that each expose specific capabilities through the standardized Model Context Protocol
-- **Local Data Sources**: Your computer's files, databases, and services that MCP servers can securely access
-- **Remote Services**: External systems available over the internet (e.g., through APIs) that MCP servers can connect to
+- 保障基础设施内数据安全的最佳实践
 
-## Get started
+### 总体架构
+MCP采用客户端-服务端架构，支持主程序连接多个服务端：
+- **MCP Hosts**：如Claude Desktop、IDE等需要接入数据的AI工具
 
-Choose the path that best fits your needs:
+- **MCP Clients**：协议客户端，与服务端保持一对一连接
 
-#### Quick Starts
+- **MCP Servers**：轻量化程序，通过标准化协议暴露特定能力
+
+- **本地数据源**：计算机文件、数据库等MCP服务端可安全访问的资源
+- **远程服务**：通过API等互联网协议连接的外部系统
+
+## 快速开始
+根据需求选择最佳路径：
+#### 快速入门
 <CardGroup cols={2}>
   <Card
-    title="For Server Developers"
+    title="面向服务端开发者"
     icon="bolt"
     href="/quickstart/server"
   >
-    Get started building your own server to use in Claude for Desktop and other clients
+    构建自定义服务端并与Claude Desktop等客户端集成
   </Card>
   <Card
-    title="For Client Developers"
+    title="面向客户端开发者"
     icon="bolt"
     href="/quickstart/client"
   >
-    Get started building your own client that can integrate with all MCP servers
+    开发支持所有MCP服务端的客户端程序
   </Card>
   <Card
-    title="For Claude Desktop Users"
+    title="面向Claude Desktop用户"
     icon="bolt"
+
     href="/quickstart/user"
   >
-    Get started using pre-built servers in Claude for Desktop
+    在Claude Desktop中使用预构建服务端
   </Card>
 </CardGroup>
 
-#### Examples
+#### 示例参考
 <CardGroup cols={2}>
   <Card
-    title="Example Servers"
+    title="服务端示例"
     icon="grid"
     href="/examples"
   >
-    Check out our gallery of official MCP servers and implementations
+    查看官方MCP服务端实现案例库
   </Card>
   <Card
-    title="Example Clients"
+    title="客户端示例"
+
     icon="cubes"
+
     href="/clients"
   >
-    View the list of clients that support MCP integrations
+    获取支持MCP集成的客户端列表
   </Card>
 </CardGroup>
 
-## Tutorials
-
+## 教程指引
 <CardGroup cols={2}>
   <Card
-    title="Building MCP with LLMs"
+    title="结合LLM开发MCP应用"
     icon="comments"
     href="/tutorials/building-mcp-with-llms"
   >
-    Learn how to use LLMs like Claude to speed up your MCP development
+    学习如何利用Claude等LLM加速MCP开发
   </Card>
   <Card
-  title="Debugging Guide"
+  title="调试指南"
   icon="bug"
   href="/docs/tools/debugging">
-    Learn how to effectively debug MCP servers and integrations
+    掌握MCP服务端与集成的调试技巧
   </Card>
   <Card
-    title="MCP Inspector"
+    title="MCP检测工具"
     icon="magnifying-glass"
     href="/docs/tools/inspector"
   >
-    Test and inspect your MCP servers with our interactive debugging tool
+    使用交互式调试工具测试服务端
   </Card>
   <Card
-    title="MCP Workshop (Video, 2hr)"
+
+    title="MCP实战工作坊（视频，2小时）"
+
     icon="person-chalkboard"
+
     href="https://www.youtube.com/watch?v=kQmXtrmQ5Zg"
   >
     <iframe src="https://www.youtube.com/embed/kQmXtrmQ5Zg"> </iframe>
   </Card>
 </CardGroup>
 
-## Explore MCP
-
-Dive deeper into MCP's core concepts and capabilities:
-
+## 深入探索
+全面了解MCP核心概念与能力：
 <CardGroup cols={2}>
   <Card
-    title="Core architecture"
+    title="核心架构"
     icon="sitemap"
     href="/docs/concepts/architecture"
   >
-    Understand how MCP connects clients, servers, and LLMs
+    解析MCP连接客户端、服务端与LLM的机制
   </Card>
   <Card
-    title="Resources"
+    title="资源体系"
     icon="database"
     href="/docs/concepts/resources"
   >
-    Expose data and content from your servers to LLMs
+    通过服务端向LLM开放数据资源
   </Card>
   <Card
-    title="Prompts"
+    title="提示工程"
     icon="message"
     href="/docs/concepts/prompts"
   >
-    Create reusable prompt templates and workflows
+    创建可复用的提示模板与工作流
   </Card>
   <Card
-    title="Tools"
+    title="工具集成"
     icon="wrench"
     href="/docs/concepts/tools"
   >
-    Enable LLMs to perform actions through your server
+    赋能LLM通过服务端执行操作
   </Card>
   <Card
-    title="Sampling"
+    title="采样机制"
     icon="robot"
     href="/docs/concepts/sampling"
   >
-    Let your servers request completions from LLMs
+    允许服务端向LLM请求补全结果
   </Card>
+
   <Card
-    title="Transports"
+
+    title="传输协议"
+
     icon="network-wired"
+
     href="/docs/concepts/transports"
+
   >
-    Learn about MCP's communication mechanism
+    了解MCP的通信机制
   </Card>
 </CardGroup>
-
-## Contributing
-
-Want to contribute? Check out our [Contributing Guide](/development/contributing) to learn how you can help improve MCP.
-
-## Support and Feedback
-
-Here's how to get help or provide feedback:
-
-- For bug reports and feature requests related to the MCP specification, SDKs, or documentation (open source), please [create a GitHub issue](https://github.com/modelcontextprotocol)
-- For discussions or Q&A about the MCP specification, use the [specification discussions](https://github.com/modelcontextprotocol/specification/discussions)
-- For discussions or Q&A about other MCP open source components, use the [organization discussions](https://github.com/orgs/modelcontextprotocol/discussions)
-- For bug reports, feature requests, and questions related to Claude.app and claude.ai's MCP integration, please see Anthropic's guide on [How to Get Support](https://support.anthropic.com/en/articles/9015913-how-to-get-support)
