@@ -3,19 +3,17 @@ title: Ping
 weight: 5
 ---
 
-<Info>**Protocol Revision**: 2024-11-05</Info>
+<Info>**协议修订版本**：2024-11-05</Info>
 
-The Model Context Protocol includes an optional ping mechanism that allows either party
-to verify that their counterpart is still responsive and the connection is alive.
+模型上下文协议包含可选的ping机制，允许通信双方验证对方是否仍保持响应且连接有效。
 
-## Overview
+## 概述
 
-The ping functionality is implemented through a simple request/response pattern. Either
-the client or server can initiate a ping by sending a `ping` request.
+ping功能通过简单的请求/响应模式实现。客户端或服务端均可通过发送`ping`请求发起ping检测。
 
-## Message Format
+## 消息格式
 
-A ping request is a standard JSON-RPC request with no parameters:
+ping请求是一个无参数的标准JSON-RPC请求：
 
 ```json
 {
@@ -25,9 +23,9 @@ A ping request is a standard JSON-RPC request with no parameters:
 }
 ```
 
-## Behavior Requirements
+## 行为规范
 
-1. The receiver **MUST** respond promptly with an empty response:
+1. 接收方**必须**立即返回空响应：
 
 ```json
 {
@@ -37,12 +35,12 @@ A ping request is a standard JSON-RPC request with no parameters:
 }
 ```
 
-2. If no response is received within a reasonable timeout period, the sender **MAY**:
-   - Consider the connection stale
-   - Terminate the connection
-   - Attempt reconnection procedures
+2. 若在合理超时时间内未收到响应，发送方**可以**：
+   - 判定连接已失效
+   - 终止连接
+   - 尝试重新连接流程
 
-## Usage Patterns
+## 使用模式
 
 ```mermaid
 sequenceDiagram
@@ -53,15 +51,15 @@ sequenceDiagram
     Receiver->>Sender: empty response
 ```
 
-## Implementation Considerations
+## 实现建议
 
-- Implementations **SHOULD** periodically issue pings to detect connection health
-- The frequency of pings **SHOULD** be configurable
-- Timeouts **SHOULD** be appropriate for the network environment
-- Excessive pinging **SHOULD** be avoided to reduce network overhead
+- 实现方案**应当**定期发送ping以检测连接状态
+- ping频率**应当**支持配置
+- 超时设置**应当**适配网络环境
+- **应当**避免过度ping检测以减少网络开销
 
-## Error Handling
+## 错误处理
 
-- Timeouts **SHOULD** be treated as connection failures
-- Multiple failed pings **MAY** trigger connection reset
-- Implementations **SHOULD** log ping failures for diagnostics
+- **应当**将超时视为连接故障
+- 多次ping失败**可以**触发连接重置
+- 实现方案**应当**记录ping失败日志以供诊断

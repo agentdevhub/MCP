@@ -154,7 +154,7 @@ MCP服务器默认仅继承部分环境变量，如`USER`、`HOME`和`PATH`。
 </Warning>
 
 对于所有[传输方式](/docs/concepts/transports)，也可以通过发送日志消息通知向客户端提供日志：
-
+<Tabs>
   <Tab title="Python">
     ```python
     server.request_context.session.send_log_message(

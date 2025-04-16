@@ -1,20 +1,16 @@
 ---
-title: Overview
+title: 概述
 ---
 
-<Info>**Protocol Revision**: 2024-11-05</Info>
+<Info>**协议修订版本**：2024-11-05</Info>
 
-Servers provide the fundamental building blocks for adding context to language models via
-MCP. These primitives enable rich interactions between clients, servers, and language
-models:
+服务器是通过MCP为大模型添加上下文的基础构建模块。这些核心组件实现了客户端、服务器与大模型之间的丰富交互：
 
-- **Prompts**: Pre-defined templates or instructions that guide language model
-  interactions
-- **Resources**: Structured data or content that provides additional context to the model
-- **Tools**: Executable functions that allow models to perform actions or retrieve
-  information
+- **提示词**：用于指导大模型交互的预定义模板或指令
+- **资源**：为模型提供额外上下文的结构化数据或内容
+- **工具**：可执行函数，允许模型执行操作或检索信息
 
-Each primitive can be summarized in the following control hierarchy:
+每个核心组件可通过以下控制层级进行概括：
 
 | Primitive | Control                | Description                                        | Example                         |
 | --------- | ---------------------- | -------------------------------------------------- | ------------------------------- |
@@ -22,10 +18,7 @@ Each primitive can be summarized in the following control hierarchy:
 | Resources | Application-controlled | Contextual data attached and managed by the client | File contents, git history      |
 | Tools     | Model-controlled       | Functions exposed to the LLM to take actions       | API POST requests, file writing |
 
-Explore these key primitives in more detail below:
+下方将深入探讨这些关键组件：
 
-<CardGroup cols={3}>
-  <Card title="Prompts" icon="message" href="prompts" />
-  <Card title="Resources" icon="file-lines" href="resources" />
   <Card title="Tools" icon="wrench" href="tools" />
 </CardGroup>

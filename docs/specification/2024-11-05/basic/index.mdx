@@ -1,12 +1,10 @@
 ---
-title: Overview
+title: 概述
 ---
 
-<Info>**Protocol Revision**: 2024-11-05</Info>
+<Info>**协议修订版本**: 2024-11-05</Info>
 
-All messages between MCP clients and servers **MUST** follow the
-[JSON-RPC 2.0](https://www.jsonrpc.org/specification) specification. The protocol defines
-three fundamental types of messages:
+MCP客户端与服务器之间的所有通信**必须**遵循[JSON-RPC 2.0](https://www.jsonrpc.org/specification)规范。该协议定义了三种基础消息类型：
 
 | Type            | Description                            | Requirements                           |
 | --------------- | -------------------------------------- | -------------------------------------- |
@@ -14,57 +12,35 @@ three fundamental types of messages:
 | `Responses`     | Messages sent in reply to requests     | Must include same ID as request        |
 | `Notifications` | One-way messages with no reply         | Must not include an ID                 |
 
-**Responses** are further sub-categorized as either **successful results** or **errors**.
-Results can follow any JSON object structure, while errors must include an error code and
-message at minimum.
+**响应消息**进一步细分为**成功结果**与**错误响应**两类。结果可采用任意JSON对象结构，而错误响应必须至少包含错误代码和描述信息。
 
-## Protocol Layers
+## 协议分层
 
-The Model Context Protocol consists of several key components that work together:
+模型上下文协议由多个协同工作的核心组件构成：
 
-- **Base Protocol**: Core JSON-RPC message types
-- **Lifecycle Management**: Connection initialization, capability negotiation, and
-  session control
-- **Server Features**: Resources, prompts, and tools exposed by servers
-- **Client Features**: Sampling and root directory lists provided by clients
-- **Utilities**: Cross-cutting concerns like logging and argument completion
+- **基础协议层**: 核心JSON-RPC消息类型
+- **生命周期管理层**: 连接初始化、能力协商和会话控制
+- **服务端功能层**: 服务器提供的资源、提示词和工具
+- **客户端功能层**: 客户端提供的采样与根目录列表
+- **工具组件层**: 日志记录、参数补全等横切关注点
 
-All implementations **MUST** support the base protocol and lifecycle management
-components. Other components **MAY** be implemented based on the specific needs of the
-application.
+所有实现**必须**支持基础协议层和生命周期管理层，其他组件可根据应用需求**选择性**实现。
 
-These protocol layers establish clear separation of concerns while enabling rich
-interactions between clients and servers. The modular design allows implementations to
-support exactly the features they need.
+这种分层设计在确保关注点分离的同时，实现了客户端与服务端间的丰富交互。模块化架构允许实现方按需支持特定功能。
 
-See the following pages for more details on the different components:
+各组件详细说明请参阅以下页面：
 
-<CardGroup cols={3}>
-  <Card title="Lifecycle" icon="arrows-rotate" href="/specification/2024-11-05/basic/lifecycle" />
-  <Card title="Resources" icon="file-lines" href="/specification/2024-11-05/server/resources" />
-  <Card title="Prompts" icon="message" href="/specification/2024-11-05/server/prompts" />
-  <Card title="Tools" icon="wrench" href="/specification/2024-11-05/server/tools" />
-  <Card title="Logging" icon="rectangle-list" href="/specification/2024-11-05/server/utilities/logging" />
   <Card title="Sampling" icon="code" href="/specification/2024-11-05/client/sampling" />
 </CardGroup>
 
-## Auth
+## 认证授权
 
-Authentication and authorization are not currently part of the core MCP specification,
-but we are considering ways to introduce them in future. Join us in
-[GitHub Discussions](https://github.com/modelcontextprotocol/specification/discussions)
-to help shape the future of the protocol!
+当前认证授权机制尚未纳入MCP核心规范，但我们正在考虑未来版本的引入方案。欢迎参与[GitHub Discussions](https://github.com/modelcontextprotocol/specification/discussions)共同探讨协议发展方向！
 
-Clients and servers **MAY** negotiate their own custom authentication and authorization
-strategies.
+客户端与服务器**可以**自行协商定制化的认证授权策略。
 
-## Schema
+## 协议架构
 
-The full specification of the protocol is defined as a
-[TypeScript schema](http://github.com/modelcontextprotocol/specification/tree/main/schema/2024-11-05/schema.ts).
-This is the source of truth for all protocol messages and structures.
+完整协议规范通过[TypeScript架构定义](http://github.com/modelcontextprotocol/specification/tree/main/schema/2024-11-05/schema.ts)实现，该文件是所有协议消息与结构的权威来源。
 
-There is also a
-[JSON Schema](http://github.com/modelcontextprotocol/specification/tree/main/schema/2024-11-05/schema.json),
-which is automatically generated from the TypeScript source of truth, for use with
-various automated tooling.
+另提供自动生成的[JSON Schema](http://github.com/modelcontextprotocol/specification/tree/main/schema/2024-11-05/schema.json)，适用于各类自动化工具链集成。

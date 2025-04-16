@@ -1,34 +1,27 @@
 ---
-title: Versioning
+title: 版本
 type: docs
 weight: 10
 ---
 
-The Model Context Protocol uses string-based version identifiers following the format
-`YYYY-MM-DD`, to indicate the last date backwards incompatible changes were made.
+Model Context Protocol 采用基于字符串的版本标识符，格式为 `YYYY-MM-DD`，用于表示最后一次进行不向后兼容变更的日期。
 
 <Info>The protocol version will _not_ be incremented when the
 protocol is updated, as long as the changes maintain backwards compatibility. This allows
 for incremental improvements while preserving interoperability.</Info>
 
-## Revisions
+## 版本修订
 
-Revisions may be marked as:
+修订版本可能被标记为：
 
-- **Draft**: in-progress specifications, not yet ready for consumption.
-- **Current**: the current protocol version, which is ready for use and may continue to
-  receive backwards compatible changes.
-- **Final**: past, complete specifications that will not be changed.
+- **草案（Draft）**：进行中的规范，尚未准备就绪供使用。
+- **现行（Current）**：当前协议版本，已可供使用并可能继续接收向后兼容的变更。
+- **终版（Final）**：已完成的过往规范，将不再进行修改。
 
-The **current** protocol version is [**2025-03-26**](/specification/2025-03-26/).
+当前协议版本为 [**2025-03-26**](/specification/2025-03-26/)。
 
-## Negotiation
+## 版本协商
 
-Version negotiation happens during
-[initialization](/specification/2025-03-26/basic/lifecycle#initialization). Clients and
-servers **MAY** support multiple protocol versions simultaneously, but they **MUST**
-agree on a single version to use for the session.
+版本协商发生在[初始化阶段](/specification/2025-03-26/basic/lifecycle#initialization)。客户端和服务端**可以**同时支持多个协议版本，但**必须**协商确定会话使用的单一版本。
 
-The protocol provides appropriate error handling if version negotiation fails, allowing
-clients to gracefully terminate connections when they cannot find a version compatible
-with the server.
+当版本协商失败时，协议会提供适当的错误处理机制，允许客户端在无法找到与服务器兼容的版本时优雅地终止连接。

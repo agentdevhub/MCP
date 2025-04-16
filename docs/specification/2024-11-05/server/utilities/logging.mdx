@@ -2,21 +2,17 @@
 title: Logging
 ---
 
-<Info>**Protocol Revision**: 2024-11-05</Info>
+<Info>**协议修订版本**: 2024-11-05</Info>
 
-The Model Context Protocol (MCP) provides a standardized way for servers to send
-structured log messages to clients. Clients can control logging verbosity by setting
-minimum log levels, with servers sending notifications containing severity levels,
-optional logger names, and arbitrary JSON-serializable data.
+模型上下文协议（MCP）为服务器提供了一种标准化方式，用于向客户端发送结构化日志消息。客户端可通过设置最低日志级别来控制日志详细程度，服务器发送的通知包含严重级别、可选的记录器名称以及任意可JSON序列化的数据。
 
-## User Interaction Model
+## 用户交互模型
 
-Implementations are free to expose logging through any interface pattern that suits their
-needs&mdash;the protocol itself does not mandate any specific user interaction model.
+具体实现可自由选择适合其需求的任何界面模式来展示日志功能——协议本身并不强制规定特定的用户交互模型。
 
-## Capabilities
+## 能力声明
 
-Servers that emit log message notifications **MUST** declare the `logging` capability:
+发送日志消息通知的服务器**必须**声明`logging`能力：
 
 ```json
 {
@@ -26,10 +22,9 @@ Servers that emit log message notifications **MUST** declare the `logging` capab
 }
 ```
 
-## Log Levels
+## 日志级别
 
-The protocol follows the standard syslog severity levels specified in
-[RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1):
+本协议遵循[RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1)定义的标准系统日志严重级别：
 
 | Level     | Description                      | Example Use Case           |
 | --------- | -------------------------------- | -------------------------- |
@@ -42,13 +37,13 @@ The protocol follows the standard syslog severity levels specified in
 | alert     | Action must be taken immediately | Data corruption detected   |
 | emergency | System is unusable               | Complete system failure    |
 
-## Protocol Messages
+## 协议消息
 
-### Setting Log Level
+### 设置日志级别
 
-To configure the minimum log level, clients **MAY** send a `logging/setLevel` request:
+客户端**可以**发送`logging/setLevel`请求来配置最低日志级别：
 
-**Request:**
+**请求：**
 
 ```json
 {
@@ -61,9 +56,9 @@ To configure the minimum log level, clients **MAY** send a `logging/setLevel` re
 }
 ```
 
-### Log Message Notifications
+### 日志消息通知
 
-Servers send log messages using `notifications/message` notifications:
+服务器使用`notifications/message`通知发送日志消息：
 
 ```json
 {
@@ -83,7 +78,7 @@ Servers send log messages using `notifications/message` notifications:
 }
 ```
 
-## Message Flow
+## 消息流程
 
 ```mermaid
 sequenceDiagram
@@ -105,38 +100,36 @@ sequenceDiagram
     Note over Server: Only sends error level<br/>and above
 ```
 
-## Error Handling
+## 错误处理
 
-Servers **SHOULD** return standard JSON-RPC errors for common failure cases:
+服务器**应当**针对常见错误返回标准JSON-RPC错误：
 
-- Invalid log level: `-32602` (Invalid params)
-- Configuration errors: `-32603` (Internal error)
+- 无效日志级别：`-32602`（参数无效）
+- 配置错误：`-32603`（内部错误）
 
-## Implementation Considerations
+## 实现注意事项
 
-1. Servers **SHOULD**:
+1. 服务器**应当**：
+   - 对日志消息进行速率限制
+   - 在data字段中包含相关上下文
+   - 使用一致的记录器名称
+   - 移除敏感信息
 
-   - Rate limit log messages
-   - Include relevant context in data field
-   - Use consistent logger names
-   - Remove sensitive information
+2. 客户端**可以**：
+   - 在用户界面展示日志消息
+   - 实现日志过滤/搜索功能
+   - 可视化显示严重级别
+   - 持久化存储日志消息
 
-2. Clients **MAY**:
-   - Present log messages in the UI
-   - Implement log filtering/search
-   - Display severity visually
-   - Persist log messages
+## 安全规范
 
-## Security
+1. 日志消息**禁止**包含：
+   - 凭据或密钥
+   - 个人身份识别信息
+   - 可能协助攻击的内部系统细节
 
-1. Log messages **MUST NOT** contain:
-
-   - Credentials or secrets
-   - Personal identifying information
-   - Internal system details that could aid attacks
-
-2. Implementations **SHOULD**:
-   - Rate limit messages
-   - Validate all data fields
-   - Control log access
-   - Monitor for sensitive content
+2. 具体实现**应当**：
+   - 限制消息速率
+   - 验证所有数据字段
+   - 控制日志访问权限
+   - 监控敏感内容

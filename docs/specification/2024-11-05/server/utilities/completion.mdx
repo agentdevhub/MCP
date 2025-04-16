@@ -2,33 +2,25 @@
 title: Completion
 ---
 
-<Info>**Protocol Revision**: 2024-11-05</Info>
+<Info>**协议修订版本**：2024-11-05</Info>
 
-The Model Context Protocol (MCP) provides a standardized way for servers to offer
-argument autocompletion suggestions for prompts and resource URIs. This enables rich,
-IDE-like experiences where users receive contextual suggestions while entering argument
-values.
+模型上下文协议（MCP）为服务器提供了一种标准化方式，用于为提示词和资源URI提供参数自动补全建议。这使得用户可以在输入参数值时获得上下文建议，实现类似IDE的丰富体验。
 
-## User Interaction Model
+## 用户交互模型
 
-Completion in MCP is designed to support interactive user experiences similar to IDE code
-completion.
+MCP中的补全功能旨在支持类似IDE代码补全的交互式用户体验。
 
-For example, applications may show completion suggestions in a dropdown or popup menu as
-users type, with the ability to filter and select from available options.
+例如，应用程序可以在用户输入时以下拉菜单或弹出窗口的形式显示补全建议，并提供筛选和选择可用选项的功能。
 
-However, implementations are free to expose completion through any interface pattern that
-suits their needs&mdash;the protocol itself does not mandate any specific user
-interaction model.
+但具体实现可以自由选择适合其需求的任何界面模式来展示补全功能——协议本身并不强制规定特定的用户交互模型。
 
-## Protocol Messages
+## 协议消息
 
-### Requesting Completions
+### 请求补全建议
 
-To get completion suggestions, clients send a `completion/complete` request specifying
-what is being completed through a reference type:
+客户端通过发送`completion/complete`请求获取补全建议，该请求通过引用类型指定要补全的内容：
 
-**Request:**
+**请求：**
 
 ```json
 {
@@ -48,7 +40,7 @@ what is being completed through a reference type:
 }
 ```
 
-**Response:**
+**响应：**
 
 ```json
 {
@@ -64,24 +56,23 @@ what is being completed through a reference type:
 }
 ```
 
-### Reference Types
+### 引用类型
 
-The protocol supports two types of completion references:
+该协议支持两种补全引用类型：
 
 | Type           | Description                 | Example                                             |
 | -------------- | --------------------------- | --------------------------------------------------- |
 | `ref/prompt`   | References a prompt by name | `{"type": "ref/prompt", "name": "code_review"}`     |
 | `ref/resource` | References a resource URI   | `{"type": "ref/resource", "uri": "file:///{path}"}` |
 
-### Completion Results
+### 补全结果
 
-Servers return an array of completion values ranked by relevance, with:
+服务器返回按相关性排序的补全值数组，其中包含：
+- 每个响应最多100条结果
+- 可选的匹配项总数
+- 布尔值标识是否存在更多结果
 
-- Maximum 100 items per response
-- Optional total number of available matches
-- Boolean indicating if additional results exist
-
-## Message Flow
+## 消息流程
 
 ```mermaid
 sequenceDiagram
@@ -97,41 +88,37 @@ sequenceDiagram
     Server-->>Client: Refined suggestions
 ```
 
-## Data Types
+## 数据类型
 
 ### CompleteRequest
-
-- `ref`: A `PromptReference` or `ResourceReference`
-- `argument`: Object containing:
-  - `name`: Argument name
-  - `value`: Current value
+- `ref`：`PromptReference`或`ResourceReference`
+- `argument`：包含以下字段的对象：
+  - `name`：参数名称
+  - `value`：当前值
 
 ### CompleteResult
+- `completion`：包含以下字段的对象：
+  - `values`：建议数组（最多100条）
+  - `total`：可选的匹配总数
+  - `hasMore`：额外结果标志位
 
-- `completion`: Object containing:
-  - `values`: Array of suggestions (max 100)
-  - `total`: Optional total matches
-  - `hasMore`: Additional results flag
+## 实现注意事项
 
-## Implementation Considerations
+1. 服务器**应当**：
+   - 按相关性排序返回建议
+   - 在适当场景实现模糊匹配
+   - 对补全请求进行速率限制
+   - 验证所有输入参数
 
-1. Servers **SHOULD**:
+2. 客户端**应当**：
+   - 对频繁的补全请求进行防抖处理
+   - 在适当场景缓存补全结果
+   - 优雅处理缺失或不完整的返回结果
 
-   - Return suggestions sorted by relevance
-   - Implement fuzzy matching where appropriate
-   - Rate limit completion requests
-   - Validate all inputs
+## 安全性
 
-2. Clients **SHOULD**:
-   - Debounce rapid completion requests
-   - Cache completion results where appropriate
-   - Handle missing or partial results gracefully
-
-## Security
-
-Implementations **MUST**:
-
-- Validate all completion inputs
-- Implement appropriate rate limiting
-- Control access to sensitive suggestions
-- Prevent completion-based information disclosure
+实现方案**必须**：
+- 验证所有补全输入
+- 实施适当的速率限制
+- 控制对敏感建议的访问权限
+- 防止基于补全的信息泄露

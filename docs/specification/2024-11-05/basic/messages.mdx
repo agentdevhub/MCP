@@ -1,18 +1,16 @@
 ---
-title: Messages
+title: 消息
 type: docs
 weight: 20
 ---
 
-<Info>**Protocol Revision**: 2024-11-05</Info>
+<Info>**协议修订版本**：2024-11-05</Info>
 
-All messages in MCP **MUST** follow the
-[JSON-RPC 2.0](https://www.jsonrpc.org/specification) specification. The protocol defines
-three types of messages:
+MCP 中的所有消息**必须**遵循 [JSON-RPC 2.0](https://www.jsonrpc.org/specification) 规范。该协议定义了三种消息类型：
 
-## Requests
+## 请求
 
-Requests are sent from the client to the server or vice versa.
+请求由客户端发往服务端，或反之。
 
 ```typescript
 {
@@ -25,14 +23,13 @@ Requests are sent from the client to the server or vice versa.
 }
 ```
 
-- Requests **MUST** include a string or integer ID.
-- Unlike base JSON-RPC, the ID **MUST NOT** be `null`.
-- The request ID **MUST NOT** have been previously used by the requestor within the same
-  session.
+- 请求**必须**包含字符串或整型 ID
+- 与基础 JSON-RPC 不同，该 ID**禁止**为 `null`
+- 请求方在同一会话中**不得**重复使用已用过的请求 ID
 
-## Responses
+## 响应
 
-Responses are sent in reply to requests.
+响应是对请求的回复。
 
 ```typescript
 {
@@ -49,14 +46,13 @@ Responses are sent in reply to requests.
 }
 ```
 
-- Responses **MUST** include the same ID as the request they correspond to.
-- Either a `result` or an `error` **MUST** be set. A response **MUST NOT** set both.
-- Error codes **MUST** be integers.
+- 响应**必须**包含与对应请求相同的 ID
+- 必须设置 `result` 或 `error`，但**禁止**同时设置两者
+- 错误代码**必须**为整型
 
-## Notifications
+## 通知
 
-Notifications are sent from the client to the server or vice versa. They do not expect a
-response.
+通知由客户端发往服务端，或反之。此类消息不要求回复。
 
 ```typescript
 {
@@ -65,7 +61,7 @@ response.
   params?: {
     [key: string]: unknown;
   };
-}
+} 
 ```
 
-- Notifications **MUST NOT** include an ID.
+- 通知**禁止**包含 ID

@@ -1,15 +1,15 @@
 ---
 title: "For Server Developers"
-description: "开始构建您自己的服务器，以便在Claude for Desktop及其他客户端中使用"
+description: "Get started building your own server to use in Claude for Desktop and other clients."
 ---
 
-本教程将指导您构建一个简单的MCP天气服务器，并将其连接到Claude for Desktop主机。我们将从基础设置开始，逐步深入到更复杂的应用场景。
+In this tutorial, we'll build a simple MCP weather server and connect it to a host, Claude for Desktop. We'll start with a basic setup, and then progress to more complex use cases.
 
-### 构建目标
+### What we'll be building
 
-目前许多大模型尚不具备获取天气预报和极端天气警报的能力。让我们用MCP来解决这个问题！
+Many LLMs do not currently have the ability to fetch the forecast and severe weather alerts. Let's use MCP to solve that!
 
-我们将构建一个暴露两个工具的服务器：`get-alerts` 和 `get-forecast`。然后将其连接到MCP主机（本例中为Claude for Desktop）：
+We'll build a server that exposes two tools: `get-alerts` and `get-forecast`. Then we'll connect the server to an MCP host (in this case, Claude for Desktop):
 
 <Frame>
   <img src="/images/weather-alerts.png" />
@@ -26,32 +26,53 @@ Servers can connect to any client. We've chosen Claude for Desktop here for simp
   Because servers are locally run, MCP currently only supports desktop hosts. Remote hosts are in active development.
 </Accordion>
 
-### MCP核心概念
+### Core MCP Concepts
 
-MCP服务器可提供三种主要能力：
+MCP servers can provide three main types of capabilities:
 
-1. **资源**：客户端可读取的类文件数据（如API响应或文件内容）
-2. **工具**：大模型可调用的函数（需经用户批准）
-3. **提示词**：帮助用户完成特定任务的预写模板
+1. **Resources**: File-like data that can be read by clients (like API responses or file contents)
+2. **Tools**: Functions that can be called by the LLM (with user approval)
+3. **Prompts**: Pre-written templates that help users accomplish specific tasks
 
-本教程将重点介绍工具的实现。
+This tutorial will primarily focus on tools.
+
+<Tabs>
+<Tab title='Python'>
+
+Let's get started with building our weather server! [You can find the complete code for what we'll be building here.](https://github.com/modelcontextprotocol/quickstart-resources/tree/main/weather-server-python)
+
+### Prerequisite knowledge
+
+This quickstart assumes you have familiarity with:
+- Python
+- LLMs like Claude
+
+### System requirements
+
+- Python 3.10 or higher installed.
+- You must use the Python MCP SDK 1.2.0 or higher.
+
+### Set up your environment
+
+First, let's install `uv` and set up our Python project and environment:
+
+<CodeGroup>
 
 ```bash MacOS/Linux
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
+
 ```powershell Windows
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
-<CodeGroup>
-
-
 
 </CodeGroup>
 
-完成后请重启终端以确保`uv`命令生效。
+Make sure to restart your terminal afterwards to ensure that the `uv` command gets picked up.
 
-现在开始创建并设置项目：
+Now, let's create and set up our project:
 
+<CodeGroup>
 ```bash MacOS/Linux
 # Create a new directory for our project
 uv init weather
@@ -67,6 +88,7 @@ uv add "mcp[cli]" httpx
 # Create our server file
 touch weather.py
 ```
+
 ```powershell Windows
 # Create a new directory for our project
 uv init weather
@@ -82,17 +104,15 @@ uv add mcp[cli] httpx
 # Create our server file
 new-item weather.py
 ```
-<CodeGroup>
-
 </CodeGroup>
 
-接下来让我们深入构建服务器。
+Now let's dive into building your server.
 
-## 构建服务器
+## Building your server
 
-### 导入包并设置实例
+### Importing packages and setting up the instance
 
-在`weather.py`文件顶部添加：
+Add these to the top of your `weather.py`:
 ```python
 from typing import Any
 import httpx
@@ -106,11 +126,11 @@ NWS_API_BASE = "https://api.weather.gov"
 USER_AGENT = "weather-app/1.0"
 ```
 
-FastMCP类利用Python类型提示和文档字符串自动生成工具定义，简化MCP工具的创建和维护。
+The FastMCP class uses Python type hints and docstrings to automatically generate tool definitions, making it easy to create and maintain MCP tools.
 
-### 辅助函数
+### Helper functions
 
-添加用于查询和格式化国家气象局API数据的辅助函数：
+Next, let's add our helper functions for querying and formatting the data from the National Weather Service API:
 
 ```python
 async def make_nws_request(url: str) -> dict[str, Any] | None:
@@ -139,9 +159,9 @@ Instructions: {props.get('instruction', 'No specific instructions provided')}
 """
 ```
 
-### 实现工具执行
+### Implementing tool execution
 
-工具执行处理器负责实际执行每个工具的逻辑：
+The tool execution handler is responsible for actually executing the logic of each tool. Let's add it:
 
 ```python
 @mcp.tool()
@@ -200,9 +220,9 @@ Forecast: {period['detailedForecast']}
     return "\n---\n".join(forecasts)
 ```
 
-### 运行服务器
+### Running the server
 
-最后初始化并运行服务器：
+Finally, let's initialize and run the server:
 
 ```python
 if __name__ == "__main__":
@@ -210,39 +230,42 @@ if __name__ == "__main__":
     mcp.run(transport='stdio')
 ```
 
-服务器构建完成！运行`uv run weather.py`确认一切正常。
+Your server is complete! Run `uv run weather.py` to confirm that everything's working.
 
-现在让我们通过Claude for Desktop测试服务器。
+Let's now test your server from an existing MCP host, Claude for Desktop.
 
-## 通过Claude for Desktop测试服务器
+## Testing your server with Claude for Desktop
 
 <Note>
 Claude for Desktop is not yet available on Linux. Linux users can proceed to the [Building a client](/quickstart/client) tutorial to build an MCP client that connects to the server we just built.
 </Note>
 
-首先确保已安装Claude for Desktop。[点击此处安装最新版本](https://claude.ai/download)。若已安装，请确保更新至最新版本。
+First, make sure you have Claude for Desktop installed. [You can install the latest version
+here.](https://claude.ai/download) If you already have Claude for Desktop, **make sure it's updated to the latest version.**
 
-需要配置Claude for Desktop以使用MCP服务器。在文本编辑器中打开`~/Library/Application Support/Claude/claude_desktop_config.json`配置文件（若不存在请新建）。
+We'll need to configure Claude for Desktop for whichever MCP servers you want to use. To do this, open your Claude for Desktop App configuration at `~/Library/Application Support/Claude/claude_desktop_config.json` in a text editor. Make sure to create the file if it doesn't exist.
 
-例如使用[VS Code](https://code.visualstudio.com/)时：
+For example, if you have [VS Code](https://code.visualstudio.com/) installed:
 
+<Tabs>
+<Tab title="MacOS/Linux">
 ```bash
 code ~/Library/Application\ Support/Claude/claude_desktop_config.json
 ```
-<Tabs>
-<Tab title="MacOS/Linux">
 </Tab>
+<Tab title="Windows">
 ```powershell
 code $env:AppData\Claude\claude_desktop_config.json
 ```
-<Tab title="Windows">
 </Tab>
 </Tabs>
 
-在`mcpServers`键下添加服务器配置。只有当至少一个服务器正确配置后，Claude for Desktop才会显示MCP界面元素。
+You'll then add your servers in the `mcpServers` key. The MCP UI elements will only show up in Claude for Desktop if at least one server is properly configured.
 
-本例中添加天气服务器配置如下：
+In this case, we'll add our single weather server like so:
 
+<Tabs>
+<Tab title="MacOS/Linux">
 ```json Python
 {
     "mcpServers": {
@@ -258,9 +281,8 @@ code $env:AppData\Claude\claude_desktop_config.json
     }
 }
 ```
-<Tabs>
-<Tab title="MacOS/Linux">
 </Tab>
+<Tab title="Windows">
 ```json Python
 {
     "mcpServers": {
@@ -276,7 +298,6 @@ code $env:AppData\Claude\claude_desktop_config.json
     }
 }
 ```
-<Tab title="Windows">
 </Tab>
 </Tabs>
 
@@ -288,17 +309,39 @@ You may need to put the full path to the `uv` executable in the `command` field.
 Make sure you pass in the absolute path to your server.
 </Note>
 
-该配置告知Claude for Desktop：
-1. 存在名为"weather"的MCP服务器
-2. 通过运行`uv --directory /ABSOLUTE/PATH/TO/PARENT/FOLDER/weather run weather.py`启动
+This tells Claude for Desktop:
+1. There's an MCP server named "weather"
+2. To launch it by running `uv --directory /ABSOLUTE/PATH/TO/PARENT/FOLDER/weather run weather.py`
 
-保存文件并重启**Claude for Desktop**。
+Save the file, and restart **Claude for Desktop**.
 </Tab>
 
+<Tab title='Node'>
+Let's get started with building our weather server! [You can find the complete code for what we'll be building here.](https://github.com/modelcontextprotocol/quickstart-resources/tree/main/weather-server-typescript)
+
+### Prerequisite knowledge
+
+This quickstart assumes you have familiarity with:
+- TypeScript
+- LLMs like Claude
+
+### System requirements
+
+For TypeScript, make sure you have the latest version of Node installed.
+
+### Set up your environment
+
+First, let's install Node.js and npm if you haven't already. You can download them from [nodejs.org](https://nodejs.org/).
+Verify your Node.js installation:
 ```bash
 node --version
 npm --version
 ```
+For this tutorial, you'll need Node.js version 16 or higher.
+
+Now, let's create and set up our project:
+
+<CodeGroup>
 ```bash MacOS/Linux
 # Create a new directory for our project
 mkdir weather
@@ -315,6 +358,7 @@ npm install -D @types/node typescript
 mkdir src
 touch src/index.ts
 ```
+
 ```powershell Windows
 # Create a new directory for our project
 md weather
@@ -331,11 +375,9 @@ npm install -D @types/node typescript
 md src
 new-item src\index.ts
 ```
-<CodeGroup>
-
 </CodeGroup>
 
-在package.json中添加type: "module"和构建脚本：
+Update your package.json to add type: "module" and a build script:
 
 ```json package.json
 {
@@ -352,7 +394,7 @@ new-item src\index.ts
 }
 ```
 
-在项目根目录创建`tsconfig.json`文件：
+Create a `tsconfig.json` in the root of your project:
 
 ```json tsconfig.json
 {
@@ -372,13 +414,13 @@ new-item src\index.ts
 }
 ```
 
-现在开始构建服务器。
+Now let's dive into building your server.
 
-## 构建服务器
+## Building your server
 
-### 导入包并设置实例
+### Importing packages and setting up the instance
 
-在`src/index.ts`文件顶部添加：
+Add these to the top of your `src/index.ts`:
 ```typescript
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -398,9 +440,9 @@ const server = new McpServer({
 });
 ```
 
-### 辅助函数
+### Helper functions
 
-添加用于查询国家气象局API的辅助函数：
+Next, let's add our helper functions for querying and formatting the data from the National Weather Service API:
 
 ```typescript
 // Helper function for making NWS API requests
@@ -471,9 +513,9 @@ interface ForecastResponse {
 }
 ```
 
-### 实现工具执行
+### Implementing tool execution
 
-添加工具执行处理器：
+The tool execution handler is responsible for actually executing the logic of each tool. Let's add it:
 
 ```typescript
 // Register weather tools
@@ -610,9 +652,9 @@ server.tool(
 );
 ```
 
-### 运行服务器
+### Running the server
 
-最后实现服务器主函数：
+Finally, implement the main function to run the server:
 
 ```typescript
 async function main() {
@@ -627,39 +669,43 @@ main().catch((error) => {
 });
 ```
 
-务必运行`npm run build`构建服务器！这是确保服务器连接的关键步骤。
+Make sure to run `npm run build` to build your server! This is a very important step in getting your server to connect.
 
-现在通过Claude for Desktop测试服务器。
+Let's now test your server from an existing MCP host, Claude for Desktop.
 
-## 通过Claude for Desktop测试
+## Testing your server with Claude for Desktop
 
 <Note>
 Claude for Desktop is not yet available on Linux. Linux users can proceed to the [Building a client](/quickstart/client) tutorial to build an MCP client that connects to the server we just built.
 </Note>
 
-首先确保Claude for Desktop已安装并更新至[最新版本](https://claude.ai/download)。
+First, make sure you have Claude for Desktop installed. [You can install the latest version
+here.](https://claude.ai/download) If you already have Claude for Desktop, **make sure it's updated to the latest version.**
 
-打开`~/Library/Application Support/Claude/claude_desktop_config.json`配置文件进行编辑（不存在则新建）：
+We'll need to configure Claude for Desktop for whichever MCP servers you want to use. To do this, open your Claude for Desktop App configuration at `~/Library/Application Support/Claude/claude_desktop_config.json` in a text editor. Make sure to create the file if it doesn't exist.
 
-例如使用[VS Code](https://code.visualstudio.com/)时：
+For example, if you have [VS Code](https://code.visualstudio.com/) installed:
 
+<Tabs>
+<Tab title="MacOS/Linux">
 ```bash
 code ~/Library/Application\ Support/Claude/claude_desktop_config.json
 ```
-<Tabs>
-<Tab title="MacOS/Linux">
 </Tab>
+<Tab title="Windows">
 ```powershell
 code $env:AppData\Claude\claude_desktop_config.json
 ```
-<Tab title="Windows">
 </Tab>
 </Tabs>
 
-在`mcpServers`键下添加服务器配置。需至少配置一个服务器才会显示MCP界面元素。
+You'll then add your servers in the `mcpServers` key. The MCP UI elements will only show up in Claude for Desktop if at least one server is properly configured.
 
-本例添加天气服务器配置：
+In this case, we'll add our single weather server like so:
 
+<Tabs>
+<Tab title="MacOS/Linux">
+<CodeGroup>
 ```json Node
 {
     "mcpServers": {
@@ -672,8 +718,10 @@ code $env:AppData\Claude\claude_desktop_config.json
     }
 }
 ```
-<CodeGroup>
 </CodeGroup>
+</Tab>
+<Tab title="Windows">
+<CodeGroup>
 ```json Node
 {
     "mcpServers": {
@@ -686,36 +734,41 @@ code $env:AppData\Claude\claude_desktop_config.json
     }
 }
 ```
-<CodeGroup>
 </CodeGroup>
+</Tab>
+</Tabs>
 
-该配置告知：
-1. 存在名为"weather"的MCP服务器
-2. 通过运行`node /ABSOLUTE/PATH/TO/PARENT/FOLDER/weather/build/index.js`启动
+This tells Claude for Desktop:
+1. There's an MCP server named "weather"
+2. Launch it by running `node /ABSOLUTE/PATH/TO/PARENT/FOLDER/weather/build/index.js`
 
-保存文件并重启**Claude for Desktop**。
+Save the file, and restart **Claude for Desktop**.
+</Tab>
+<Tab title='Java'>
+
 <Note>
 This is a quickstart demo based on Spring AI MCP auto-configuration and boot starters. 
 To learn how to create sync and async MCP Servers, manually, consult the [Java SDK Server](/sdk/java/mcp-server) documentation.
 </Note>
 
-开始构建天气服务器！
-[完整代码可在此处获取](https://github.com/spring-projects/spring-ai-examples/tree/main/model-context-protocol/weather/starter-stdio-server)
 
-更多信息请参考：
-- [MCP Server Boot Starter文档](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-server-boot-starter-docs.html)
-- [MCP Server Java SDK文档](/sdk/java/mcp-server)
+Let's get started with building our weather server! 
+[You can find the complete code for what we'll be building here.](https://github.com/spring-projects/spring-ai-examples/tree/main/model-context-protocol/weather/starter-stdio-server)
 
-### 系统要求
+For more information, see the [MCP Server Boot Starter](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-server-boot-starter-docs.html) reference documentation.
+For manual MCP Server implementation, refer to the [MCP Server Java SDK documentation](/sdk/java/mcp-server).
 
-- Java 17或更高版本
-- [Spring Boot 3.3.x](https://docs.spring.io/spring-boot/installing.html)或更高版本
+### System requirements
 
-### 环境设置
+- Java 17 or higher installed.
+- [Spring Boot 3.3.x](https://docs.spring.io/spring-boot/installing.html) or higher
 
-使用[Spring Initializer](https://start.spring.io/)初始化项目。
+### Set up your environment
 
-需添加以下依赖：
+Use the [Spring Initializer](https://start.spring.io/) to bootstrap the project.
+
+You will need to add the following dependencies:
+
 <Tabs>
   <Tab title="Maven">
   ```xml
@@ -742,12 +795,15 @@ To learn how to create sync and async MCP Servers, manually, consult the [Java S
   </Tab>
 </Tabs>
 
-配置application.properties文件：
+Then configure your application by setting the application properties:
+
+<CodeGroup>
 
 ```bash application.properties
 spring.main.bannerMode=off
 logging.pattern.console=
 ```
+
 ```yaml application.yml
 logging:
   pattern:
@@ -756,20 +812,17 @@ spring:
   main:
     banner-mode: off
 ```
-<CodeGroup>
-
-
 </CodeGroup>
 
-所有可用属性详见[服务器配置属性文档](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-server-boot-starter-docs.html#_configuration_properties)。
+The [Server Configuration Properties](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-server-boot-starter-docs.html#_configuration_properties) documents all available properties.
 
-现在开始构建服务器。
+Now let's dive into building your server.
 
-## 构建服务器
+## Building your server
 
-### 天气服务
+### Weather Service
 
-实现[WeatherService.java](https://github.com/spring-projects/spring-ai-examples/blob/main/model-context-protocol/weather/starter-stdio-server/src/main/java/org/springframework/ai/mcp/sample/server/WeatherService.java)：
+Let's implement a [WeatherService.java](https://github.com/spring-projects/spring-ai-examples/blob/main/model-context-protocol/weather/starter-stdio-server/src/main/java/org/springframework/ai/mcp/sample/server/WeatherService.java) that uses a REST client to query the data from the National Weather Service API:
 
 ```java
 @Service
@@ -812,12 +865,12 @@ public class WeatherService {
 }
 ```
 
-`@Service`注解将自动注册服务到应用上下文。
-Spring AI的`@Tool`注解简化了MCP工具的创建和维护。
+The `@Service` annotation with auto-register the service in your application context.
+The Spring AI `@Tool` annotation, making it easy to create and maintain MCP tools.
 
-自动配置会将这些工具注册到MCP服务器。
+The auto-configuration will automatically register these tools with the MCP server. 
 
-### 创建启动应用
+### Create your Boot Application
 
 ```java
 @SpringBootApplication
@@ -834,31 +887,35 @@ public class McpServerApplication {
 }
 ```
 
-使用`MethodToolCallbackProvider`工具将`@Tools`转换为MCP服务器可用的回调。
+Uses the the `MethodToolCallbackProvider` utils to convert the `@Tools` into actionable callbacks used by the MCP server.
 
-### 运行服务器
+### Running the server
 
-最后构建服务器：
+Finally, let's build the server:
 
 ```bash
 ./mvnw clean install
 ```
 
-构建将在`target`目录生成`mcp-weather-stdio-server-0.0.1-SNAPSHOT.jar`文件。
+This will generate a `mcp-weather-stdio-server-0.0.1-SNAPSHOT.jar` file within the `target` folder.
 
-现在通过Claude for Desktop测试服务器。
+Let's now test your server from an existing MCP host, Claude for Desktop.
 
-## 通过Claude for Desktop测试
+## Testing your server with Claude for Desktop
 
 <Note>
 Claude for Desktop is not yet available on Linux.
 </Note>
 
-首先确保已安装最新版[Claude for Desktop](https://claude.ai/download)。
+First, make sure you have Claude for Desktop installed. 
+[You can install the latest version here.](https://claude.ai/download) If you already have Claude for Desktop, **make sure it's updated to the latest version.**
 
-编辑`~/Library/Application Support/Claude/claude_desktop_config.json`配置文件（不存在则新建）：
+We'll need to configure Claude for Desktop for whichever MCP servers you want to use. 
+To do this, open your Claude for Desktop App configuration at `~/Library/Application Support/Claude/claude_desktop_config.json` in a text editor. 
+Make sure to create the file if it doesn't exist.
 
-例如使用[VS Code](https://code.visualstudio.com/)时：
+For example, if you have [VS Code](https://code.visualstudio.com/) installed:
+
 <Tabs>
   <Tab title="MacOS/Linux">
   ```bash
@@ -872,9 +929,11 @@ Claude for Desktop is not yet available on Linux.
   </Tab>
 </Tabs>
 
-在`mcpServers`键下添加服务器配置。需至少配置一个服务器才会显示MCP界面元素。
+You'll then add your servers in the `mcpServers` key. 
+The MCP UI elements will only show up in Claude for Desktop if at least one server is properly configured.
 
-本例添加天气服务器配置：
+In this case, we'll add our single weather server like so:
+
 <Tabs>
   <Tab title="MacOS/Linux">
   ```json java
@@ -915,17 +974,17 @@ Claude for Desktop is not yet available on Linux.
 Make sure you pass in the absolute path to your server.
 </Note>
 
-该配置告知：
-1. 存在名为"my-weather-server"的MCP服务器
-2. 通过运行`java -jar /ABSOLUTE/PATH/TO/PARENT/FOLDER/mcp-weather-stdio-server-0.0.1-SNAPSHOT.jar`启动
+This tells Claude for Desktop:
+1. There's an MCP server named "my-weather-server"
+2. To launch it by running `java -jar /ABSOLUTE/PATH/TO/PARENT/FOLDER/mcp-weather-stdio-server-0.0.1-SNAPSHOT.jar`
 
-保存文件并重启**Claude for Desktop**。
+Save the file, and restart **Claude for Desktop**.
 
-## 使用Java客户端测试
+## Testing your server with Java client
 
-### 手动创建MCP客户端
+### Create a MCP Client manually
 
-使用`McpClient`连接服务器：
+Use the `McpClient` to connect to the server:
 
 ```java
 var stdioParams = ServerParameters.builder("java")
@@ -950,9 +1009,9 @@ CallToolResult alert = mcpClient.callTool(
 mcpClient.closeGracefully();
 ```
 
-### 使用MCP客户端启动器
+### Use MCP Client Boot Starter
 
-使用`spring-ai-starter-mcp-client`依赖创建新启动应用：
+Create a new boot starter application using the `spring-ai-starter-mcp-client` dependency:
 
 ```xml
 <dependency>
@@ -961,26 +1020,49 @@ mcpClient.closeGracefully();
 </dependency>
 ```
 
-设置`spring.ai.mcp.client.stdio.servers-configuration`属性指向`claude_desktop_config.json`。
-可复用现有Anthropic Desktop配置：
+and set the `spring.ai.mcp.client.stdio.servers-configuration` property to point to your `claude_desktop_config.json`.
+You can re-use the existing Anthropic Desktop configuration:
 
 ```properties
 spring.ai.mcp.client.stdio.servers-configuration=file:PATH/TO/claude_desktop_config.json
 ```
 
-启动客户端应用时，自动配置将从claude_desktop_config.json创建MCP客户端。
+When you start your client application, the auto-configuration will create, automatically MCP clients from the claude_desktop_config.json.
 
-更多信息参考[MCP客户端启动器文档](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-server-boot-client-docs.html)。
+For more information, see the [MCP Client Boot Starters](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-server-boot-client-docs.html) reference documentation.
 
-## 更多Java MCP服务器示例
+## More Java MCP Server examples
 
-[starter-webflux-server](https://github.com/spring-projects/spring-ai-examples/tree/main/model-context-protocol/weather/starter-webflux-server)演示了如何使用SSE传输创建MCP服务器，展示如何利用Spring Boot自动配置能力定义和注册MCP工具、资源和提示词。
+The [starter-webflux-server](https://github.com/spring-projects/spring-ai-examples/tree/main/model-context-protocol/weather/starter-webflux-server) demonstrates how to create a MCP server using SSE transport. 
+It showcases how to define and register MCP Tools, Resources, and Prompts, using the Spring Boot's auto-configuration capabilities.
 
 </Tab>
 
+<Tab title='Kotlin'>
+Let's get started with building our weather server! [You can find the complete code for what we'll be building here.](https://github.com/modelcontextprotocol/kotlin-sdk/tree/main/samples/weather-stdio-server)
+
+### Prerequisite knowledge
+
+This quickstart assumes you have familiarity with:
+- Kotlin
+- LLMs like Claude
+
+### System requirements
+
+- Java 17 or higher installed.
+
+### Set up your environment
+
+First, let's install `java` and `gradle` if you haven't already.
+You can download `java` from [official Oracle JDK website](https://www.oracle.com/java/technologies/downloads/).
+Verify your `java` installation:
 ```bash
 java --version
 ```
+
+Now, let's create and set up your project:
+
+<CodeGroup>
 ```bash MacOS/Linux
 # Create a new directory for our project
 mkdir weather
@@ -989,6 +1071,7 @@ cd weather
 # Initialize a new kotlin project
 gradle init
 ```
+
 ```powershell Windows
 # Create a new directory for our project
 md weather
@@ -997,18 +1080,15 @@ cd weather
 # Initialize a new kotlin project
 gradle init
 ```
-<CodeGroup>
-
 </CodeGroup>
 
-运行`gradle init`后选择：
-- 项目类型：**Application**
-- 编程语言：**Kotlin**
-- Java版本：**Java 17**
+After running `gradle init`, you will be presented with options for creating your project.
+Select **Application** as the project type, **Kotlin** as the programming language, and **Java 17** as the Java version.
 
-也可通过[IntelliJ IDEA项目向导](https://kotlinlang.org/docs/jvm-get-started.html)创建Kotlin应用。
+Alternatively, you can create a Kotlin application using the [IntelliJ IDEA project wizard](https://kotlinlang.org/docs/jvm-get-started.html).
 
-创建项目后添加依赖：
+After creating the project, add the following dependencies:
+<CodeGroup>
 ```kotlin build.gradle.kts
 val mcpVersion = "0.4.0"
 val slf4jVersion = "2.0.9"
@@ -1021,6 +1101,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
 }
 ```
+
 ```groovy build.gradle
 def mcpVersion = '0.3.0'
 def slf4jVersion = '2.0.9'
@@ -1033,34 +1114,32 @@ dependencies {
     implementation "io.ktor:ktor-serialization-kotlinx-json:$ktorVersion"
 }
 ```
-<CodeGroup>
-
 </CodeGroup>
 
-构建脚本添加插件：
+Also, add the following plugins to your build script:
+<CodeGroup>
 ```kotlin build.gradle.kts
 plugins {
     kotlin("plugin.serialization") version "your_version_of_kotlin"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 ```
+
 ```groovy build.gradle
 plugins {
     id 'org.jetbrains.kotlin.plugin.serialization' version 'your_version_of_kotlin'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 ```
-<CodeGroup>
-
 </CodeGroup>
 
-现在开始构建服务器。
+Now let’s dive into building your server.
 
-## 构建服务器
+## Building your server
 
-### 实例设置
+### Setting up the instance
 
-添加服务器初始化函数：
+Add a server initialization function:
 
 ```kotlin
 // Main function to run the MCP server
@@ -1093,9 +1172,9 @@ fun `run mcp server`() {
 }
 ```
 
-### 天气API辅助函数
+### Weather API helper functions
 
-添加查询国家气象局API的函数和数据类：
+Next, let's add functions and data classes for querying and converting responses from the National Weather Service API:
 
 ```kotlin
 // Extension function to fetch forecast information for given latitude and longitude
@@ -1168,9 +1247,9 @@ data class Alert(
 }
 ```
 
-### 实现工具执行
+### Implementing tool execution
 
-添加工具执行处理器：
+The tool execution handler is responsible for actually executing the logic of each tool. Let's add it:
 
 ```kotlin
 // Create an HTTP client with a default request configuration and JSON content negotiation
@@ -1243,44 +1322,49 @@ server.addTool(
 }
 ```
 
-### 运行服务器
+### Running the server
 
-最后实现服务器主函数：
+Finally, implement the main function to run the server:
 
 ```kotlin
 fun main() = `run mcp server`()
 ```
 
-务必运行`./gradlew build`构建服务器，这是确保连接的关键步骤。
+Make sure to run `./gradlew build` to build your server. This is a very important step in getting your server to connect.
 
-现在通过Claude for Desktop测试服务器。
+Let's now test your server from an existing MCP host, Claude for Desktop.
 
-## 通过Claude for Desktop测试
+## Testing your server with Claude for Desktop
 
 <Note>
 Claude for Desktop is not yet available on Linux. Linux users can proceed to the [Building a client](/quickstart/client) tutorial to build an MCP client that connects to the server we just built.
 </Note>
 
-首先确保已安装最新版[Claude for Desktop](https://claude.ai/download)。
+First, make sure you have Claude for Desktop installed. [You can install the latest version
+here.](https://claude.ai/download) If you already have Claude for Desktop, **make sure it's updated to the latest version.**
 
-编辑`~/Library/Application Support/Claude/claude_desktop_config.json`配置文件（不存在则新建）：
+We'll need to configure Claude for Desktop for whichever MCP servers you want to use.
+To do this, open your Claude for Desktop App configuration at `~/Library/Application Support/Claude/claude_desktop_config.json` in a text editor.
+Make sure to create the file if it doesn't exist.
 
-例如使用[VS Code](https://code.visualstudio.com/)时：
+For example, if you have [VS Code](https://code.visualstudio.com/) installed:
 
+<CodeGroup>
 ```bash MacOS/Linux
 code ~/Library/Application\ Support/Claude/claude_desktop_config.json
 ```
+
 ```powershell Windows
 code $env:AppData\Claude\claude_desktop_config.json
 ```
-<CodeGroup>
-
 </CodeGroup>
 
-在`mcpServers`键下添加服务器配置。需至少配置一个服务器才会显示MCP界面元素。
+You'll then add your servers in the `mcpServers` key.
+The MCP UI elements will only show up in Claude for Desktop if at least one server is properly configured.
 
-本例添加天气服务器配置：
+In this case, we'll add our single weather server like so:
 
+<CodeGroup>
 ```json MacOS/Linux
 {
     "mcpServers": {
@@ -1294,6 +1378,7 @@ code $env:AppData\Claude\claude_desktop_config.json
     }
 }
 ```
+
 ```json Windows
 {
     "mcpServers": {
@@ -1307,21 +1392,35 @@ code $env:AppData\Claude\claude_desktop_config.json
     }
 }
 ```
-<CodeGroup>
-
 </CodeGroup>
 
-该配置告知：
-1. 存在名为"weather"的MCP服务器
-2. 通过运行`java -jar /ABSOLUTE/PATH/TO/PARENT/FOLDER/weather/build/libs/weather-0.1.0-all.jar`启动
+This tells Claude for Desktop:
+1. There's an MCP server named "weather"
+2. Launch it by running `java -jar /ABSOLUTE/PATH/TO/PARENT/FOLDER/weather/build/libs/weather-0.1.0-all.jar`
 
-保存文件并重启**Claude for Desktop**。
+Save the file, and restart **Claude for Desktop**.
 
 </Tab>
 
+<Tab title='C#'>
+Let's get started with building our weather server! [You can find the complete code for what we'll be building here.](https://github.com/modelcontextprotocol/csharp-sdk/tree/main/samples/QuickstartWeatherServer)
+
+### Prerequisite knowledge
+This quickstart assumes you have familiarity with:
+- C#
+- LLMs like Claude
+- .NET 8 or higher
+
+### System requirements
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) or higher installed.
+
+### Set up your environment
+First, let's install `dotnet` if you haven't already. You can download `dotnet` from [official Microsoft .NET website](https://dotnet.microsoft.com/download/). Verify your `dotnet` installation:
 ```bash
 dotnet --version
 ```
+Now, let's create and set up your project:
+<CodeGroup>
 ```bash MacOS/Linux
 # Create a new directory for our project
 mkdir weather
@@ -1329,6 +1428,7 @@ cd weather
 # Initialize a new C# project
 dotnet new console
 ```
+
 ```powershell Windows
 # Create a new directory for our project
 mkdir weather
@@ -1336,12 +1436,11 @@ cd weather
 # Initialize a new C# project
 dotnet new console
 ```
-<CodeGroup>
-
 </CodeGroup>
-运行`dotnet new console`创建C#项目，可在[Visual Studio](https://visualstudio.microsoft.com/)或[Rider](https://www.jetbrains.com/rider/)中打开。
-也可通过[Visual Studio项目向导](https://learn.microsoft.com/en-us/visualstudio/get-started/csharp/tutorial-console?view=vs-2022)创建。
-添加Model Context Protocol SDK和宿主的NuGet包：
+After running `dotnet new console`, you will be presented with a new C# project.
+You can open the project in your favorite IDE, such as [Visual Studio](https://visualstudio.microsoft.com/) or [Rider](https://www.jetbrains.com/rider/).
+Alternatively, you can create a C# application using the [Visual Studio project wizard](https://learn.microsoft.com/en-us/visualstudio/get-started/csharp/tutorial-console?view=vs-2022).
+After creating the project, add NuGet package for the Model Context Protocol SDK and hosting:
 
 ```bash
 # Add the Model Context Protocol SDK NuGet package
@@ -1349,11 +1448,11 @@ dotnet add package ModelContextProtocol --prerelease
 # Add the .NET Hosting NuGet package
 dotnet add package Microsoft.Extensions.Hosting
 ```
-现在开始构建服务器。
+Now let’s dive into building your server.
 
-## 构建服务器
+## Building your server
 
-打开`Program.cs`文件并替换为以下代码：
+Open the `Program.cs` file in your project and replace its contents with the following code:
 
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
@@ -1382,10 +1481,10 @@ await app.RunAsync();
 When creating the `ApplicationHostBuilder`, ensure you use `CreateEmptyApplicationBuilder` instead of `CreateDefaultBuilder`. This ensures that the server does not write any additional messages to the console. This is only neccessary for servers using STDIO transport.
 </Note>
 
-该代码创建了使用标准I/O传输的基础MCP服务器控制台应用。
+This code sets up a basic console application that uses the Model Context Protocol SDK to create an MCP server with standard I/O transport.
 
-### 天气API辅助函数
-定义包含国家气象局API查询工具的类：
+### Weather API helper functions
+Next, define a class with the tool execution handlers for querying and converting responses from the National Weather Service API:
 
 ```csharp
 using ModelContextProtocol.Server;
@@ -1443,40 +1542,41 @@ public static class WeatherTools
 }
 ```
 
-### 运行服务器
-使用以下命令运行服务器：
+### Running the server
+Finally, run the server using the following command:
 
 ```bash
 dotnet run
 ```
-服务器将启动并通过标准输入/输出监听请求。
+This will start the server and listen for incoming requests on standard input/output.
 
-## 通过Claude for Desktop测试
+## Testing your server with Claude for Desktop
 <Note>
 Claude for Desktop is not yet available on Linux. Linux users can proceed to the [Building a client](/quickstart/client) tutorial to build an MCP client that connects to the server we just built.
 </Note>
 
-首先确保已安装最新版[Claude for Desktop](https://claude.ai/download)。
-编辑`~/Library/Application Support/Claude/claude_desktop_config.json`配置文件（不存在则新建）：
-例如使用[VS Code](https://code.visualstudio.com/)时：
-
+First, make sure you have Claude for Desktop installed. [You can install the latest version
+here.](https://claude.ai/download) If you already have Claude for Desktop, **make sure it's updated to the latest version.**
+We'll need to configure Claude for Desktop for whichever MCP servers you want to use. To do this, open your Claude for Desktop App configuration at `~/Library/Application Support/Claude/claude_desktop_config.json` in a text editor. Make sure to create the file if it doesn't exist.
+For example, if you have [VS Code](https://code.visualstudio.com/) installed:
+<Tabs>
+<Tab title="MacOS/Linux">
 ```bash
 code ~/Library/Application\ Support/Claude/claude_desktop_config.json
 ```
-<Tabs>
-<Tab title="MacOS/Linux">
 </Tab>
+<Tab title="Windows">
 ```powershell
 code $env:AppData\Claude\claude_desktop_config.json
 ```
-<Tab title="Windows">
 </Tab>
 </Tabs>
 
-在`mcpServers`键下添加服务器配置。需至少配置一个服务器才会显示MCP界面元素。
+You'll then add your servers in the `mcpServers` key. The MCP UI elements will only show up in Claude for Desktop if at least one server is properly configured.
+In this case, we'll add our single weather server like so:
 
-本例添加天气服务器配置：
-
+<Tabs>
+<Tab title="MacOS/Linux">
 ```json
 {
     "mcpServers": {
@@ -1492,11 +1592,10 @@ code $env:AppData\Claude\claude_desktop_config.json
     }
 }
 ```
-<Tabs>
-<Tab title="MacOS/Linux">
 
 </Tab>
 
+<Tab title="Windows">
 ```json
 {
     "mcpServers": {
@@ -1512,36 +1611,37 @@ code $env:AppData\Claude\claude_desktop_config.json
     }
 }
 ```
-<Tab title="Windows">
 </Tab>
+</Tabs>
 
-该配置告知：
-1. 存在名为"weather"的MCP服务器
-2. 通过运行`dotnet run /ABSOLUTE/PATH/TO/PROJECT`启动
-保存文件并重启**Claude for Desktop**。
+This tells Claude for Desktop:
+1. There's an MCP server named "weather"
+2. Launch it by running `dotnet run /ABSOLUTE/PATH/TO/PROJECT`
+Save the file, and restart **Claude for Desktop**.
 
 </Tab>
 </Tabs>
 
-### 命令测试
+### Test with commands
 
-确认Claude for Desktop能识别`weather`服务器暴露的两个工具。查找锤子<img src="/images/claude-desktop-mcp-hammer-icon.svg" style={{display: 'inline', margin: 0, height: '1.3em'}} />图标：
+Let's make sure Claude for Desktop is picking up the two tools we've exposed in our `weather` server. You can do this by looking for the hammer <img src="/images/claude-desktop-mcp-hammer-icon.svg" style={{display: 'inline', margin: 0, height: '1.3em'}} /> icon:
 
 <Frame>
   <img src="/images/visual-indicator-mcp-tools.png" />
 </Frame>
 
-点击锤子图标应显示两个工具：
+After clicking on the hammer icon, you should see two tools listed:
 
 <Frame>
   <img src="/images/available-mcp-tools.png" />
 </Frame>
 
-若服务器未被识别，请参考[故障排除](#troubleshooting)章节。
+If your server isn't being picked up by Claude for Desktop, proceed to the [Troubleshooting](#troubleshooting) section for debugging tips.
 
-若图标显示正常，可通过以下命令测试：
-- 萨克拉门托的天气如何？
-- 德克萨斯州有哪些活跃天气警报？
+If the hammer icon has shown up, you can now test your server by running the following commands in Claude for Desktop:
+
+- What's the weather in Sacramento?
+- What are the active weather alerts in Texas?
 
 <Frame>
   <img src="/images/current-weather.png" />
@@ -1554,22 +1654,19 @@ code $env:AppData\Claude\claude_desktop_config.json
 Since this is the US National Weather service, the queries will only work for US locations.
 </Note>
 
-## 底层原理
+## What's happening under the hood
 
-当您提问时：
-1. 客户端将问题发送给Claude
-2. Claude分析可用工具并决定使用哪些
-3. 客户端通过MCP服务器执行选定工具
-4. 结果返回给Claude
-5. Claude生成自然语言响应
-6. 响应显示给用户
+When you ask a question:
 
-## 故障排除
+1. The client sends your question to Claude
+2. Claude analyzes the available tools and decides which one(s) to use
+3. The client executes the chosen tool(s) through the MCP server
+4. The results are sent back to Claude
+5. Claude formulates a natural language response
+6. The response is displayed to you!
 
-```bash
-# Check Claude's logs for errors
-tail -n 20 -f ~/Library/Logs/Claude/mcp*.log
-```
+## Troubleshooting
+
 <AccordionGroup>
 <Accordion title="Claude for Desktop Integration Issues">
 **Getting logs from Claude for Desktop**
@@ -1580,6 +1677,10 @@ Claude.app logging related to MCP is written to log files in `~/Library/Logs/Cla
 - Files named `mcp-server-SERVERNAME.log` will contain error (stderr) logging from the named server.
 
 You can run the following command to list recent logs and follow along with any new ones:
+```bash
+# Check Claude's logs for errors
+tail -n 20 -f ~/Library/Logs/Claude/mcp*.log
+```
 
 **Server not showing up in Claude**
 
@@ -1624,8 +1725,9 @@ This isn't an error - it just means there are no current weather alerts for that
 For more advanced troubleshooting, check out our guide on [Debugging MCP](/docs/tools/debugging)
 </Note>
 
-## 后续步骤
-<CardGroup>
+## Next steps
+
+<CardGroup cols={2}>
   <Card
     title="Building a client"
     icon="outlet"
