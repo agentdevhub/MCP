@@ -1,26 +1,26 @@
 ---
-标题："提示词"
-描述："创建可复用的提示词模板与工作流"
+title: "Prompts"
+description: "Create reusable prompt templates and workflows"
 ---
 
-提示词功能允许服务端定义可复用的提示词模板和工作流，客户端可轻松将其呈现给用户和大模型。这为标准化和共享常见的大模型交互提供了强大途径。
+Prompts enable servers to define reusable prompt templates and workflows that clients can easily surface to users and LLMs. They provide a powerful way to standardize and share common LLM interactions.
 
 <Note>
   Prompts are designed to be **user-controlled**, meaning they are exposed from servers to clients with the intention of the user being able to explicitly select them for use.
 </Note>
 
-## 概述
+## Overview
 
-MCP中的提示词是预定义的模板，能够：
-- 接收动态参数
-- 包含来自资源的上下文
-- 串联多个交互步骤
-- 引导特定工作流
-- 作为UI元素呈现（如斜杠命令）
+Prompts in MCP are predefined templates that can:
+- Accept dynamic arguments
+- Include context from resources
+- Chain multiple interactions
+- Guide specific workflows
+- Surface as UI elements (like slash commands)
 
-## 提示词结构
+## Prompt structure
 
-每个提示词定义包含：
+Each prompt is defined with:
 
 ```typescript
 {
@@ -36,9 +36,9 @@ MCP中的提示词是预定义的模板，能够：
 }
 ```
 
-## 发现提示词
+## Discovering prompts
 
-客户端可通过`prompts/list`端点发现可用提示词：
+Clients can discover available prompts through the `prompts/list` endpoint:
 
 ```typescript
 // Request
@@ -64,9 +64,9 @@ MCP中的提示词是预定义的模板，能够：
 }
 ```
 
-## 使用提示词
+## Using prompts
 
-客户端通过发起`prompts/get`请求来使用提示词：
+To use a prompt, clients make a `prompts/get` request:
 
 ```typescript
 // Request
@@ -95,11 +95,11 @@ MCP中的提示词是预定义的模板，能够：
 }
 ```
 
-## 动态提示词
+## Dynamic prompts
 
-提示词支持动态功能，包括：
+Prompts can be dynamic and include:
 
-### 嵌入式资源上下文
+### Embedded resource context
 
 ```json
 {
@@ -120,7 +120,7 @@ MCP中的提示词是预定义的模板，能够：
 }
 ```
 
-当处理`prompts/get`请求时：
+When handling the `prompts/get` request:
 
 ```json
 {
@@ -158,7 +158,7 @@ MCP中的提示词是预定义的模板，能够：
 }
 ```
 
-### 多步骤工作流
+### Multi-step workflows
 
 ```typescript
 const debugWorkflow = {
@@ -191,10 +191,11 @@ const debugWorkflow = {
 };
 ```
 
-## 实现示例
+## Example implementation
 
-以下是在MCP服务端实现提示词的完整示例：
+Here's a complete example of implementing prompts in an MCP server:
 
+<Tabs>
   <Tab title="TypeScript">
     ```typescript
     import { Server } from "@modelcontextprotocol/sdk/server";
@@ -374,47 +375,51 @@ const debugWorkflow = {
   </Tab>
 </Tabs>
 
-## 最佳实践
+## Best practices
 
-实现提示词时建议：
-1. 使用清晰、描述性的提示词命名
-2. 为提示词和参数提供详细说明
-3. 验证所有必填参数
-4. 优雅处理缺失参数
-5. 考虑对提示词模板进行版本控制
-6. 适时缓存动态内容
-7. 实现错误处理机制
-8. 记录参数格式要求
-9. 考虑提示词的可组合性
-10. 使用多样化输入测试提示词
+When implementing prompts:
 
-## UI集成
+1. Use clear, descriptive prompt names
+2. Provide detailed descriptions for prompts and arguments
+3. Validate all required arguments
+4. Handle missing arguments gracefully
+5. Consider versioning for prompt templates
+6. Cache dynamic content when appropriate
+7. Implement error handling
+8. Document expected argument formats
+9. Consider prompt composability
+10. Test prompts with various inputs
 
-提示词可通过以下形式呈现在客户端UI中：
-- 斜杠命令
-- 快捷操作
-- 上下文菜单项
-- 命令面板条目
-- 引导式工作流
-- 交互式表单
+## UI integration
 
-## 更新与变更
+Prompts can be surfaced in client UIs as:
 
-服务端可通过以下方式通知客户端提示词变更：
-1. 服务端能力：`prompts.listChanged`
-2. 通知：`notifications/prompts/list_changed`
-3. 客户端重新获取提示词列表
+- Slash commands
+- Quick actions
+- Context menu items
+- Command palette entries
+- Guided workflows
+- Interactive forms
 
-## 安全考量
+## Updates and changes
 
-实现提示词时需注意：
-- 验证所有参数
-- 净化用户输入
-- 考虑速率限制
-- 实施访问控制
-- 审计提示词使用情况
-- 妥善处理敏感数据
-- 验证生成内容
-- 设置超时机制
-- 防范提示词注入风险
-- 记录安全要求
+Servers can notify clients about prompt changes:
+
+1. Server capability: `prompts.listChanged`
+2. Notification: `notifications/prompts/list_changed`
+3. Client re-fetches prompt list
+
+## Security considerations
+
+When implementing prompts:
+
+- Validate all arguments
+- Sanitize user input
+- Consider rate limiting
+- Implement access controls
+- Audit prompt usage
+- Handle sensitive data appropriately
+- Validate generated content
+- Implement timeouts
+- Consider prompt injection risks
+- Document security requirements

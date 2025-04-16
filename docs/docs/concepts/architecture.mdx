@@ -1,17 +1,17 @@
 ---
-title: "Core architecture"
-description: "Understand how MCP connects clients, servers, and LLMs"
+标题："核心架构"
+描述："了解MCP如何连接客户端、服务器与大模型"
 ---
 
-The Model Context Protocol (MCP) is built on a flexible, extensible architecture that enables seamless communication between LLM applications and integrations. This document covers the core architectural components and concepts.
+模型上下文协议（MCP）基于灵活可扩展的架构构建，实现大模型应用与集成间的无缝通信。本文档阐述核心架构组件与设计理念。
 
-## Overview
+## 概述
 
-MCP follows a client-server architecture where:
+MCP采用客户端-服务器架构：
 
-- **Hosts** are LLM applications (like Claude Desktop or IDEs) that initiate connections
-- **Clients** maintain 1:1 connections with servers, inside the host application
-- **Servers** provide context, tools, and prompts to clients
+- **宿主应用**指代发起连接的大模型应用（如Claude Desktop或IDE开发环境）
+- **客户端**在宿主应用内部与服务器保持1:1连接
+- **服务器**为客户端提供上下文、工具及提示词支持
 
 ```mermaid
 flowchart LR
@@ -30,23 +30,12 @@ flowchart LR
     client2 <-->|Transport Layer| server2
 ```
 
-## Core components
+## 核心组件
 
-### Protocol layer
+### 协议层
 
-The protocol layer handles message framing, request/response linking, and high-level communication patterns.
+协议层负责消息帧处理、请求/响应关联及高层通信模式管理。
 
-<Tabs>
-  <Tab title="TypeScript">
-    ```typescript
-    class Protocol<Request, Notification, Result> {
-        // Handle incoming requests
-        setRequestHandler<T>(schema: T, handler: (request: T, extra: RequestHandlerExtra) => Promise<Result>): void
-
-        // Handle incoming notifications
-        setNotificationHandler<T>(schema: T, handler: (notification: T) => Promise<void>): void
-
-        // Send requests and await responses
         request<T>(request: Request, schema: T, options?: RequestOptions): Promise<T>
 
         // Send one-way notifications
@@ -89,31 +78,31 @@ The protocol layer handles message framing, request/response linking, and high-l
   </Tab>
 </Tabs>
 
-Key classes include:
+关键类包括：
 
 * `Protocol`
 * `Client`
 * `Server`
 
-### Transport layer
+### 传输层
 
-The transport layer handles the actual communication between clients and servers. MCP supports multiple transport mechanisms:
+传输层处理客户端与服务器间的实际通信。MCP支持多种传输机制：
 
-1. **Stdio transport**
-   - Uses standard input/output for communication
-   - Ideal for local processes
+1. **标准输入输出传输**
+   - 通过标准输入/输出进行通信
+   - 适用于本地进程场景
 
-2. **HTTP with SSE transport**
-   - Uses Server-Sent Events for server-to-client messages
-   - HTTP POST for client-to-server messages
+2. **HTTP SSE传输**
+   - 使用服务器推送事件(Server-Sent Events)实现服务端到客户端消息
+   - 通过HTTP POST实现客户端到服务端消息
 
-All transports use [JSON-RPC](https://www.jsonrpc.org/) 2.0 to exchange messages. See the [specification](/specification/) for detailed information about the Model Context Protocol message format.
+所有传输均采用[JSON-RPC](https://www.jsonrpc.org/) 2.0协议交换消息。详见[规范文档](/specification/)获取模型上下文协议消息格式的详细信息。
 
-### Message types
+### 消息类型
 
-MCP has these main types of messages:
+MCP定义以下主要消息类型：
 
-1. **Requests** expect a response from the other side:
+1. **请求消息**需要接收方响应：
     ```typescript
     interface Request {
       method: string;
@@ -121,14 +110,14 @@ MCP has these main types of messages:
     }
     ```
 
-2. **Results** are successful responses to requests:
+2. **结果消息**表示请求成功响应：
     ```typescript
     interface Result {
       [key: string]: unknown;
     }
     ```
 
-3. **Errors** indicate that a request failed:
+3. **错误消息**表示请求处理失败：
     ```typescript
     interface Error {
       code: number;
@@ -137,7 +126,7 @@ MCP has these main types of messages:
     }
     ```
 
-4. **Notifications** are one-way messages that don't expect a response:
+4. **通知消息**为单向消息无需响应：
     ```typescript
     interface Notification {
       method: string;
@@ -145,9 +134,9 @@ MCP has these main types of messages:
     }
     ```
 
-## Connection lifecycle
+## 连接生命周期
 
-### 1. Initialization
+### 1. 初始化阶段
 
 ```mermaid
 sequenceDiagram
@@ -161,28 +150,28 @@ sequenceDiagram
     Note over Client,Server: Connection ready for use
 ```
 
-1. Client sends `initialize` request with protocol version and capabilities
-2. Server responds with its protocol version and capabilities
-3. Client sends `initialized` notification as acknowledgment
-4. Normal message exchange begins
+1. 客户端发送`initialize`请求，携带协议版本与能力参数
+2. 服务端返回自身协议版本与能力参数
+3. 客户端发送`initialized`通知作为确认
+4. 开始正常消息交换
 
-### 2. Message exchange
+### 2. 消息交换阶段
 
-After initialization, the following patterns are supported:
+初始化完成后支持以下模式：
 
-- **Request-Response**: Client or server sends requests, the other responds
-- **Notifications**: Either party sends one-way messages
+- **请求-响应模式**：客户端或服务端发送请求，另一方返回响应
+- **通知模式**：任一方发送单向消息
 
-### 3. Termination
+### 3. 终止阶段
 
-Either party can terminate the connection:
-- Clean shutdown via `close()`
-- Transport disconnection
-- Error conditions
+任一方均可终止连接：
+- 通过`close()`指令优雅关闭
+- 传输层断开
+- 错误状态触发
 
-## Error handling
+## 错误处理
 
-MCP defines these standard error codes:
+MCP定义以下标准错误码：
 
 ```typescript
 enum ErrorCode {
@@ -195,18 +184,17 @@ enum ErrorCode {
 }
 ```
 
-SDKs and applications can define their own error codes above -32000.
+SDK和应用程序可自定义-32000以上的错误码。
 
-Errors are propagated through:
-- Error responses to requests
-- Error events on transports
-- Protocol-level error handlers
+错误通过以下途径传递：
+- 请求的错误响应
+- 传输层的错误事件
+- 协议级错误处理器
 
-## Implementation example
+## 实现示例
 
-Here's a basic example of implementing an MCP server:
+基础MCP服务端实现示例：
 
-<Tabs>
   <Tab title="TypeScript">
     ```typescript
     import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -270,78 +258,78 @@ Here's a basic example of implementing an MCP server:
   </Tab>
 </Tabs>
 
-## Best practices
+## 最佳实践
 
-### Transport selection
+### 传输选择
 
-1. **Local communication**
-   - Use stdio transport for local processes
-   - Efficient for same-machine communication
-   - Simple process management
+1. **本地通信**
+   - 本地进程间使用标准输入输出传输
+   - 同机通信效率最佳
+   - 进程管理简单
 
-2. **Remote communication**
-   - Use SSE for scenarios requiring HTTP compatibility
-   - Consider security implications including authentication and authorization
+2. **远程通信**
+   - 需要HTTP兼容性时采用SSE传输
+   - 需考虑认证鉴权等安全因素
 
-### Message handling
+### 消息处理
 
-1. **Request processing**
-   - Validate inputs thoroughly
-   - Use type-safe schemas
-   - Handle errors gracefully
-   - Implement timeouts
+1. **请求处理**
+   - 严格校验输入参数
+   - 使用类型安全模式
+   - 优雅处理错误
+   - 实现超时机制
 
-2. **Progress reporting**
-   - Use progress tokens for long operations
-   - Report progress incrementally
-   - Include total progress when known
+2. **进度报告**
+   - 长时操作使用进度令牌
+   - 增量式进度汇报
+   - 已知总进度时需包含
 
-3. **Error management**
-   - Use appropriate error codes
-   - Include helpful error messages
-   - Clean up resources on errors
+3. **错误管理**
+   - 使用恰当错误码
+   - 包含有效错误信息
+   - 错误时清理资源
 
-## Security considerations
+## 安全考量
 
-1. **Transport security**
-   - Use TLS for remote connections
-   - Validate connection origins
-   - Implement authentication when needed
+1. **传输安全**
+   - 远程连接启用TLS加密
+   - 验证连接来源
+   - 按需实现认证机制
 
-2. **Message validation**
-   - Validate all incoming messages
-   - Sanitize inputs
-   - Check message size limits
-   - Verify JSON-RPC format
+2. **消息验证**
+   - 校验所有入站消息
+   - 输入参数消毒
+   - 检查消息大小限制
+   - 验证JSON-RPC格式
 
-3. **Resource protection**
-   - Implement access controls
-   - Validate resource paths
-   - Monitor resource usage
-   - Rate limit requests
+3. **资源保护**
+   - 实施访问控制
+   - 校验资源路径
+   - 监控资源使用
+   - 请求限流
 
-4. **Error handling**
-   - Don't leak sensitive information
-   - Log security-relevant errors
-   - Implement proper cleanup
-   - Handle DoS scenarios
+4. **错误处理**
+   - 避免敏感信息泄露
+   - 记录安全相关错误
+   - 实现妥善清理
+   - 防范拒绝服务攻击
 
-## Debugging and monitoring
+## 调试与监控
 
-1. **Logging**
-   - Log protocol events
-   - Track message flow
-   - Monitor performance
-   - Record errors
+1. **日志记录**
+   - 记录协议事件
+   - 跟踪消息流向
+   - 监控性能指标
+   - 保存错误记录
 
-2. **Diagnostics**
-   - Implement health checks
-   - Monitor connection state
-   - Track resource usage
-   - Profile performance
+2. **诊断措施**
+   - 实现健康检查
+   - 监控连接状态
+   - 追踪资源使用
+   - 性能剖析
 
-3. **Testing**
-   - Test different transports
-   - Verify error handling
-   - Check edge cases
-   - Load test servers
+3. **测试方案**
+   - 多传输层测试
+   - 验证错误处理
+   - 检查边界情况
+   - 服务端压力测试
