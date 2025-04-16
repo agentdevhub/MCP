@@ -6,17 +6,20 @@
 提示词功能允许服务端定义可复用的提示词模板和工作流，客户端可轻松将其呈现给用户和大模型。这为标准化和共享常见的大模型交互提供了强大途径。
 
 <Note>
-  Prompts are designed to be **user-controlled**, meaning they are exposed from servers to clients with the intention of the user being able to explicitly select them for use.
+  Prompts are designed to be **user-controlled**, meaning they are exposed from
+  servers to clients with the intention of the user being able to explicitly
+  select them for use.
 </Note>
 
 ## 概述
 
-MCP中的提示词是预定义的模板，能够：
+MCP 中的提示词是预定义的模板，能够：
+
 - 接收动态参数
 - 包含来自资源的上下文
 - 串联多个交互步骤
 - 引导特定工作流
-- 作为UI元素呈现（如斜杠命令）
+- 作为 UI 元素呈现（如斜杠命令）
 
 ## 提示词结构
 
@@ -68,7 +71,7 @@ MCP中的提示词是预定义的模板，能够：
 
 客户端通过发起`prompts/get`请求来使用提示词：
 
-```typescript
+````typescript
 // Request
 {
   method: "prompts/get",
@@ -93,7 +96,7 @@ MCP中的提示词是预定义的模板，能够：
     }
   ]
 }
-```
+````
 
 ## 动态提示词
 
@@ -193,7 +196,7 @@ const debugWorkflow = {
 
 ## 实现示例
 
-以下是在MCP服务端实现提示词的完整示例：
+以下是在 MCP 服务端实现提示词的完整示例：
 
   <Tab title="TypeScript">
     ```typescript
@@ -288,6 +291,7 @@ const debugWorkflow = {
       throw new Error("Prompt implementation not found");
     });
     ```
+
   </Tab>
   <Tab title="Python">
     ```python
@@ -371,12 +375,13 @@ const debugWorkflow = {
 
         raise ValueError("Prompt implementation not found")
     ```
+
   </Tab>
-</Tabs>
 
 ## 最佳实践
 
 实现提示词时建议：
+
 1. 使用清晰、描述性的提示词命名
 2. 为提示词和参数提供详细说明
 3. 验证所有必填参数
@@ -388,9 +393,10 @@ const debugWorkflow = {
 9. 考虑提示词的可组合性
 10. 使用多样化输入测试提示词
 
-## UI集成
+## UI 集成
 
-提示词可通过以下形式呈现在客户端UI中：
+提示词可通过以下形式呈现在客户端 UI 中：
+
 - 斜杠命令
 - 快捷操作
 - 上下文菜单项
@@ -401,6 +407,7 @@ const debugWorkflow = {
 ## 更新与变更
 
 服务端可通过以下方式通知客户端提示词变更：
+
 1. 服务端能力：`prompts.listChanged`
 2. 通知：`notifications/prompts/list_changed`
 3. 客户端重新获取提示词列表
@@ -408,6 +415,7 @@ const debugWorkflow = {
 ## 安全考量
 
 实现提示词时需注意：
+
 - 验证所有参数
 - 净化用户输入
 - 考虑速率限制
