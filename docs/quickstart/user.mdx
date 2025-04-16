@@ -1,53 +1,51 @@
 ---
-title: "For Claude Desktop Users"
-description: "Get started using pre-built servers in Claude for Desktop."
+title: "Claude桌面版"
+description: "通过预构建服务器快速上手Claude桌面版"
 ---
 
-In this tutorial, you will extend [Claude for Desktop](https://claude.ai/download) so that it can read from your computer's file system, write new files, move files, and even search files.
+本教程将指导您扩展[Claude桌面版](https://claude.ai/download)的功能，使其能够读取电脑文件系统、创建新文件、移动文件甚至搜索文件。
 
 <Frame>
   <img src="/images/quickstart-filesystem.png" />
 </Frame>
 
-Don't worry — it will ask you for your permission before executing these actions!
+请放心——执行这些操作前都会征求您的许可！
 
-## 1. Download Claude for Desktop
+## 1. 下载Claude桌面版
 
-Start by downloading [Claude for Desktop](https://claude.ai/download), choosing either macOS or Windows. (Linux is not yet supported for Claude for Desktop.)
+首先下载[Claude桌面版](https://claude.ai/download)，选择macOS或Windows版本（目前暂不支持Linux系统）。
 
-Follow the installation instructions.
+按照安装指引完成安装。
 
-If you already have Claude for Desktop, make sure it's on the latest version by clicking on the Claude menu on your computer and selecting "Check for Updates..."
+若已安装Claude桌面版，请点击电脑上的Claude菜单选择"检查更新..."确保使用最新版本。
 
 <Accordion title="Why Claude for Desktop and not Claude.ai?">
   Because servers are locally run, MCP currently only supports desktop hosts. Remote hosts are in active development.
 </Accordion>
 
-## 2. Add the Filesystem MCP Server
+## 2. 添加文件系统MCP服务器
 
-To add this filesystem functionality, we will be installing a pre-built [Filesystem MCP Server](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem) to Claude for Desktop. This is one of dozens of [servers](https://github.com/modelcontextprotocol/servers/tree/main) created by Anthropic and the community.
+为实现文件系统功能，我们将为Claude桌面版安装预构建的[文件系统MCP服务器](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem)。这是Anthropic与社区开发的数十个[服务器](https://github.com/modelcontextprotocol/servers/tree/main)之一。
 
-Get started by opening up the Claude menu on your computer and select "Settings..." Please note that these are not the Claude Account Settings found in the app window itself.
+打开电脑上的Claude菜单选择"设置..."（请注意这不是应用窗口内的账户设置）。
 
-This is what it should look like on a Mac:
+Mac系统界面示例如下：
 <Frame style={{ textAlign: 'center' }}>
   <img src="/images/quickstart-menu.png" width="400" />
 </Frame>
 
-Click on "Developer" in the left-hand bar of the Settings pane, and then click on "Edit Config":
+在设置面板左侧栏点击"开发者"，然后点击"编辑配置"：
 <Frame>
   <img src="/images/quickstart-developer.png" />
 </Frame>
 
-This will create a configuration file at:
-- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+这将在以下路径创建配置文件：
+- macOS：`~/Library/Application Support/Claude/claude_desktop_config.json`
+- Windows：`%APPDATA%\Claude\claude_desktop_config.json`
 
-if you don't already have one, and will display the file in your file system.
+（若文件不存在），并会在文件系统中显示该文件。
 
-Open up the configuration file in any text editor. Replace the file contents with this:
-<Tabs>
-<Tab title="MacOS/Linux">
+用文本编辑器打开配置文件，替换文件内容为：
 ```json
 {
   "mcpServers": {
@@ -63,8 +61,9 @@ Open up the configuration file in any text editor. Replace the file contents wit
   }
 }
 ```
+<Tabs>
+<Tab title="MacOS/Linux">
 </Tab>
-<Tab title="Windows">
 ```json
 {
   "mcpServers": {
@@ -80,20 +79,21 @@ Open up the configuration file in any text editor. Replace the file contents wit
   }
 }
 ```
+<Tab title="Windows">
 </Tab>
 </Tabs>
 
-Make sure to replace `username` with your computer's username. The paths should point to valid directories that you want Claude to be able to access and modify. It's set up to work for Desktop and Downloads, but you can add more paths as well.
+注意将`username`替换为您电脑的用户名。路径应指向您希望Claude访问和修改的有效目录，默认设置适用于桌面和下载文件夹，您也可以添加更多路径。
 
-You will also need [Node.js](https://nodejs.org) on your computer for this to run properly. To verify you have Node installed, open the command line on your computer.
-- On macOS, open the Terminal from your Applications folder
-- On Windows, press Windows + R, type "cmd", and press Enter
+本功能需要电脑安装[Node.js](https://nodejs.org)。可通过命令行验证：
+- macOS：从应用程序文件夹打开终端
+- Windows：按Windows+R键，输入"cmd"后回车
 
-Once in the command line, verify you have Node installed by entering in the following command:
+在命令行中输入以下命令验证Node是否安装：
 ```bash
 node --version
 ```
-If you get an error saying "command not found" or "node is not recognized", download Node from [nodejs.org](https://nodejs.org/).
+若显示"command not found"或"node is not recognized"错误，请从[nodejs.org](https://nodejs.org/)下载安装。
 
 <Tip>
 **How does the configuration file work?**
@@ -107,80 +107,64 @@ This configuration file tells Claude for Desktop which MCP servers to start up e
 Claude for Desktop will run the commands in the configuration file with the permissions of your user account, and access to your local files. Only add commands if you understand and trust the source.
 </Warning>
 
-## 3. Restart Claude
+## 3. 重启Claude
 
-After updating your configuration file, you need to restart Claude for Desktop.
+更新配置文件后，需要重启Claude桌面版。
 
-Upon restarting, you should see a hammer <img src="/images/claude-desktop-mcp-hammer-icon.svg" style={{display: 'inline', margin: 0, height: '1.3em'}} /> icon in the bottom right corner of the input box:
+重启后应在输入框右下角看到锤子<img src="/images/claude-desktop-mcp-hammer-icon.svg" style={{display: 'inline', margin: 0, height: '1.3em'}} />图标：
 
 <Frame>
   <img src="/images/quickstart-hammer.png" />
 </Frame>
 
-After clicking on the hammer icon, you should see the tools that come with the Filesystem MCP Server:
+点击锤子图标后，将显示文件系统MCP服务器提供的工具：
 
 <Frame style={{ textAlign: 'center' }}>
   <img src="/images/quickstart-tools.png" width="400" />
 </Frame>
 
-If your server isn't being picked up by Claude for Desktop, proceed to the [Troubleshooting](#troubleshooting) section for debugging tips.
+若Claude桌面版未识别服务器，请参考[故障排除](#troubleshooting)章节进行调试。
 
-## 4. Try it out!
+## 4. 开始体验！
 
-You can now talk to Claude and ask it about your filesystem. It should know when to call the relevant tools.
+现在您可以与Claude对话并查询文件系统，它会自动调用相关工具。
 
-Things you might try asking Claude:
-- Can you write a poem and save it to my desktop?
-- What are some work-related files in my downloads folder?
-- Can you take all the images on my desktop and move them to a new folder called "Images"?
+可尝试的指令示例：
+- 能写首诗保存到我的桌面吗？
+- 下载文件夹里有哪些工作相关文件？
+- 能把桌面上所有图片移到新建的"Images"文件夹吗？
 
-As needed, Claude will call the relevant tools and seek your approval before taking an action:
+需要时，Claude会调用相应工具并在执行前征求您的同意：
 <Frame style={{ textAlign: 'center' }}>
   <img src="/images/quickstart-approve.png" width="500" />
 </Frame>
 
-## Troubleshooting
+## 故障排除
 
-<AccordionGroup>
-<Accordion title="Server not showing up in Claude / hammer icon missing">
-  1. Restart Claude for Desktop completely
-  2. Check your `claude_desktop_config.json` file syntax
-  3. Make sure the file paths included in `claude_desktop_config.json` are valid and that they are absolute and not relative
-  4. Look at [logs](#getting-logs-from-claude-for-desktop) to see why the server is not connecting
-  5. In your command line, try manually running the server (replacing `username` as you did in `claude_desktop_config.json`) to see if you get any errors:
-<Tabs>
-<Tab title="MacOS/Linux">
 ```bash
 npx -y @modelcontextprotocol/server-filesystem /Users/username/Desktop /Users/username/Downloads
 ```
+<Tabs>
+<Tab title="MacOS/Linux">
 </Tab>
-<Tab title="Windows">
 ```bash
 npx -y @modelcontextprotocol/server-filesystem C:\Users\username\Desktop C:\Users\username\Downloads
 ```
+<Tab title="Windows">
 </Tab>
 </Tabs>
 </Accordion>
-<Accordion title="Getting logs from Claude for Desktop">
-  Claude.app logging related to MCP is written to log files in:
-  - macOS: `~/Library/Logs/Claude`
-  - Windows: `%APPDATA%\Claude\logs`
-
-  - `mcp.log` will contain general logging about MCP connections and connection failures.
-  - Files named `mcp-server-SERVERNAME.log` will contain error (stderr) logging from the named server.
-
-  You can run the following command to list recent logs and follow along with any new ones (on Windows, it will only show recent logs):
-<Tabs>
-<Tab title="MacOS/Linux">
 ```bash
 # Check Claude's logs for errors
 tail -n 20 -f ~/Library/Logs/Claude/mcp*.log
 ```
+<Tabs>
+<Tab title="MacOS/Linux">
 </Tab>
-<Tab title="Windows">
 ```bash
 type "%APPDATA%\Claude\logs\mcp*.log"
 ```
+<Tab title="Windows">
 </Tab>
 </Tabs>
 </Accordion>
@@ -194,9 +178,6 @@ type "%APPDATA%\Claude\logs\mcp*.log"
 <Accordion title="None of this is working. What do I do?">
   Please refer to our [debugging guide](/docs/tools/debugging) for better debugging tools and more detailed guidance.
 </Accordion>
-<Accordion title="ENOENT error and `${APPDATA}` in paths on Windows">
-If your configured server fails to load, and you see within its logs an error referring to `${APPDATA}` within a path, you may need to add the expanded value of `%APPDATA%` to your `env` key in `claude_desktop_config.json`:
-
 ```json
 {
   "brave-search": {
@@ -209,23 +190,20 @@ If your configured server fails to load, and you see within its logs an error re
   }
 }
 ```
-
-With this change in place, launch Claude Desktop once again.
-
+```bash
+npm install -g npm
+```
 <Warning>
 **NPM should be installed globally**
 
 The `npx` command may continue to fail if you have not installed NPM globally. If NPM is already installed globally, you will find `%APPDATA%\npm` exists on your system. If not, you can install NPM globally by running the following command:
 
-```bash
-npm install -g npm
-```
 </Warning>
 
 </Accordion>
 </AccordionGroup>
 
-## Next steps
+## 后续步骤
 <CardGroup cols={2}>
   <Card
     title="Explore other servers"

@@ -1,107 +1,107 @@
 ---
-title: Debugging
-description: A comprehensive guide to debugging Model Context Protocol (MCP) integrations
+title: 调试
+description: 模型上下文协议 (MCP) 集成调试完整指南
 ---
 
-Effective debugging is essential when developing MCP servers or integrating them with applications. This guide covers the debugging tools and approaches available in the MCP ecosystem.
+开发MCP服务器或将其与应用程序集成时，有效的调试至关重要。本指南涵盖MCP生态系统中可用的调试工具和方法。
 
 <Info>
   This guide is for macOS. Guides for other platforms are coming soon.
 </Info>
 
-## Debugging tools overview
+## 调试工具概览
 
-MCP provides several tools for debugging at different levels:
+MCP提供多层次的调试工具：
 
-1. **MCP Inspector**
-   - Interactive debugging interface
-   - Direct server testing
-   - See the [Inspector guide](/docs/tools/inspector) for details
+1. **MCP检查器**
+   - 交互式调试界面
+   - 直接服务器测试
+   - 详见[检查器指南](/docs/tools/inspector)
 
-2. **Claude Desktop Developer Tools**
-   - Integration testing
-   - Log collection
-   - Chrome DevTools integration
+2. **Claude桌面开发者工具**
+   - 集成测试
+   - 日志收集
+   - Chrome DevTools集成
 
-3. **Server Logging**
-   - Custom logging implementations
-   - Error tracking
-   - Performance monitoring
+3. **服务器日志**
+   - 自定义日志实现
+   - 错误追踪
+   - 性能监控
 
-## Debugging in Claude Desktop
+## Claude桌面调试
 
-### Checking server status
+### 检查服务器状态
 
-The Claude.app interface provides basic server status information:
+Claude.app界面提供基础服务器状态信息：
 
-1. Click the <img src="/images/claude-desktop-mcp-plug-icon.svg" style={{display: 'inline', margin: 0, height: '1.3em'}} /> icon to view:
-   - Connected servers
-   - Available prompts and resources
+1. 点击<img src="/images/claude-desktop-mcp-plug-icon.svg" style={{display: 'inline', margin: 0, height: '1.3em'}} />图标可查看：
+   - 已连接服务器
+   - 可用提示词和资源
 
-2. Click the <img src="/images/claude-desktop-mcp-hammer-icon.svg" style={{display: 'inline', margin: 0, height: '1.3em'}} /> icon to view:
-   - Tools made available to the model
+2. 点击<img src="/images/claude-desktop-mcp-hammer-icon.svg" style={{display: 'inline', margin: 0, height: '1.3em'}} />图标可查看：
+   - 提供给模型的工具
 
-### Viewing logs
+### 查看日志
 
-Review detailed MCP logs from Claude Desktop:
+从Claude Desktop查看详细MCP日志：
 
 ```bash
 # Follow logs in real-time
 tail -n 20 -F ~/Library/Logs/Claude/mcp*.log
 ```
 
-The logs capture:
-- Server connection events
-- Configuration issues
-- Runtime errors
-- Message exchanges
+日志记录内容包括：
+- 服务器连接事件
+- 配置问题
+- 运行时错误
+- 消息交换
 
-### Using Chrome DevTools
+### 使用Chrome DevTools
 
-Access Chrome's developer tools inside Claude Desktop to investigate client-side errors:
+在Claude Desktop内调用Chrome开发者工具排查客户端错误：
 
-1. Create a `developer_settings.json` file with `allowDevTools` set to true:
+1. 创建`developer_settings.json`文件并设置`allowDevTools`为true：
 
 ```bash
 echo '{"allowDevTools": true}' > ~/Library/Application\ Support/Claude/developer_settings.json
 ```
 
-2. Open DevTools: `Command-Option-Shift-i`
+2. 打开DevTools：`Command-Option-Shift-i`
 
-Note: You'll see two DevTools windows:
-- Main content window
-- App title bar window
+注意：将看到两个DevTools窗口：
+- 主内容窗口
+- 应用标题栏窗口
 
-Use the Console panel to inspect client-side errors.
+使用Console面板检查客户端错误。
 
-Use the Network panel to inspect:
-- Message payloads
-- Connection timing
+使用Network面板检查：
+- 消息负载
+- 连接时序
 
-## Common issues
+## 常见问题
 
-### Working directory
+### 工作目录
 
-When using MCP servers with Claude Desktop:
+在Claude Desktop中使用MCP服务器时：
 
-- The working directory for servers launched via `claude_desktop_config.json` may be undefined (like `/` on macOS) since Claude Desktop could be started from anywhere
-- Always use absolute paths in your configuration and `.env` files to ensure reliable operation
-- For testing servers directly via command line, the working directory will be where you run the command
+- 通过`claude_desktop_config.json`启动的服务器工作目录可能未定义（如macOS上的`/`），因为Claude Desktop可能从任意位置启动
+- 配置文件和`.env`中始终使用绝对路径确保可靠运行
+- 通过命令行直接测试服务器时，工作目录将是命令运行位置
 
-For example in `claude_desktop_config.json`, use:
+例如在`claude_desktop_config.json`中应使用：
 ```json
 {
   "command": "npx",
   "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/username/data"]
 }
 ```
-Instead of relative paths like `./data`
+而非相对路径如`./data`
 
-### Environment variables
+### 环境变量
 
-MCP servers inherit only a subset of environment variables automatically, like `USER`, `HOME`, and `PATH`.
+MCP服务器默认仅继承部分环境变量，如`USER`、`HOME`和`PATH`。
 
-To override the default variables or provide your own, you can specify an `env` key in `claude_desktop_config.json`:
+要覆盖默认变量或添加自定义变量，可在`claude_desktop_config.json`中指定`env`键：
 
 ```json
 {
@@ -114,48 +114,47 @@ To override the default variables or provide your own, you can specify an `env` 
 }
 ```
 
-### Server initialization
+### 服务器初始化
 
-Common initialization problems:
+常见初始化问题：
 
-1. **Path Issues**
-   - Incorrect server executable path
-   - Missing required files
-   - Permission problems
-   - Try using an absolute path for `command`
+1. **路径问题**
+   - 服务器可执行路径错误
+   - 缺少必需文件
+   - 权限问题
+   - 尝试为`command`使用绝对路径
 
-2. **Configuration Errors**
-   - Invalid JSON syntax
-   - Missing required fields
-   - Type mismatches
+2. **配置错误**
+   - JSON语法无效
+   - 缺少必填字段
+   - 类型不匹配
 
-3. **Environment Problems**
-   - Missing environment variables
-   - Incorrect variable values
-   - Permission restrictions
+3. **环境问题**
+   - 缺少环境变量
+   - 变量值错误
+   - 权限限制
 
-### Connection problems
+### 连接问题
 
-When servers fail to connect:
+服务器连接失败时：
 
-1. Check Claude Desktop logs
-2. Verify server process is running
-3. Test standalone with [Inspector](/docs/tools/inspector)
-4. Verify protocol compatibility
+1. 检查Claude Desktop日志
+2. 验证服务器进程是否运行
+3. 使用[检查器](/docs/tools/inspector)单独测试
+4. 验证协议兼容性
 
-## Implementing logging
+## 日志实现
 
-### Server-side logging
+### 服务器端日志
 
-When building a server that uses the local stdio [transport](/docs/concepts/transports), all messages logged to stderr (standard error) will be captured by the host application (e.g., Claude Desktop) automatically.
+构建使用本地stdio[传输](/docs/concepts/transports)的服务器时，所有输出到stderr（标准错误）的日志消息会被宿主应用（如Claude Desktop）自动捕获。
 
 <Warning>
   Local MCP servers should not log messages to stdout (standard out), as this will interfere with protocol operation.
 </Warning>
 
-For all [transports](/docs/concepts/transports), you can also provide logging to the client by sending a log message notification:
+对于所有[传输方式](/docs/concepts/transports)，也可以通过发送日志消息通知向客户端提供日志：
 
-<Tabs>
   <Tab title="Python">
     ```python
     server.request_context.session.send_log_message(
@@ -174,102 +173,101 @@ For all [transports](/docs/concepts/transports), you can also provide logging to
   </Tab>
 </Tabs>
 
-Important events to log:
-- Initialization steps
-- Resource access
-- Tool execution
-- Error conditions
-- Performance metrics
+需记录的重要事件：
+- 初始化步骤
+- 资源访问
+- 工具执行
+- 错误状态
+- 性能指标
 
-### Client-side logging
+### 客户端日志
 
-In client applications:
+在客户端应用中：
 
-1. Enable debug logging
-2. Monitor network traffic
-3. Track message exchanges
-4. Record error states
+1. 启用调试日志
+2. 监控网络流量
+3. 跟踪消息交换
+4. 记录错误状态
 
-## Debugging workflow
+## 调试流程
 
-### Development cycle
+### 开发周期
 
-1. Initial Development
-   - Use [Inspector](/docs/tools/inspector) for basic testing
-   - Implement core functionality
-   - Add logging points
+1. 初始开发
+   - 使用[检查器](/docs/tools/inspector)进行基础测试
+   - 实现核心功能
+   - 添加日志点
 
-2. Integration Testing
-   - Test in Claude Desktop
-   - Monitor logs
-   - Check error handling
+2. 集成测试
+   - 在Claude Desktop中测试
+   - 监控日志
+   - 检查错误处理
 
-### Testing changes
+### 变更测试
 
-To test changes efficiently:
+高效测试变更：
 
-- **Configuration changes**: Restart Claude Desktop
-- **Server code changes**: Use Command-R to reload
-- **Quick iteration**: Use [Inspector](/docs/tools/inspector) during development
+- **配置变更**：重启Claude Desktop
+- **服务器代码变更**：使用Command-R重新加载
+- **快速迭代**：开发期间使用[检查器](/docs/tools/inspector)
 
-## Best practices
+## 最佳实践
 
-### Logging strategy
+### 日志策略
 
-1. **Structured Logging**
-   - Use consistent formats
-   - Include context
-   - Add timestamps
-   - Track request IDs
+1. **结构化日志**
+   - 使用统一格式
+   - 包含上下文
+   - 添加时间戳
+   - 跟踪请求ID
 
-2. **Error Handling**
-   - Log stack traces
-   - Include error context
-   - Track error patterns
-   - Monitor recovery
+2. **错误处理**
+   - 记录堆栈跟踪
+   - 包含错误上下文
+   - 追踪错误模式
+   - 监控恢复情况
 
-3. **Performance Tracking**
-   - Log operation timing
-   - Monitor resource usage
-   - Track message sizes
-   - Measure latency
+3. **性能追踪**
+   - 记录操作耗时
+   - 监控资源使用
+   - 跟踪消息大小
+   - 测量延迟
 
-### Security considerations
+### 安全考量
 
-When debugging:
+调试时注意：
 
-1. **Sensitive Data**
-   - Sanitize logs
-   - Protect credentials
-   - Mask personal information
+1. **敏感数据**
+   - 日志脱敏
+   - 保护凭证
+   - 隐藏个人信息
 
-2. **Access Control**
-   - Verify permissions
-   - Check authentication
-   - Monitor access patterns
+2. **访问控制**
+   - 验证权限
+   - 检查认证
+   - 监控访问模式
 
-## Getting help
+## 获取帮助
 
-When encountering issues:
+遇到问题时：
 
-1. **First Steps**
-   - Check server logs
-   - Test with [Inspector](/docs/tools/inspector)
-   - Review configuration
-   - Verify environment
+1. **初步排查**
+   - 检查服务器日志
+   - 使用[检查器](/docs/tools/inspector)测试
+   - 复查配置
+   - 验证环境
 
-2. **Support Channels**
+2. **支持渠道**
    - GitHub issues
    - GitHub discussions
 
-3. **Providing Information**
-   - Log excerpts
-   - Configuration files
-   - Steps to reproduce
-   - Environment details
+3. **提供信息**
+   - 日志片段
+   - 配置文件
+   - 重现步骤
+   - 环境详情
 
-## Next steps
-
+## 后续步骤
 <CardGroup cols={2}>
   <Card
     title="MCP Inspector"

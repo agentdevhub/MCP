@@ -1,27 +1,27 @@
 ---
-title: "工具"
-description: "让大模型通过您的服务器执行操作"
+title: "Tools"
+description: "Enable LLMs to perform actions through your server"
 ---
 
-工具（Tools）是模型上下文协议（MCP）中的核心功能单元，它允许服务器向客户端暴露可执行功能。通过工具，大模型能够与外部系统交互、执行计算任务并实现现实世界中的操作。
+Tools are a powerful primitive in the Model Context Protocol (MCP) that enable servers to expose executable functionality to clients. Through tools, LLMs can interact with external systems, perform computations, and take actions in the real world.
 
 <Note>
   Tools are designed to be **model-controlled**, meaning that tools are exposed from servers to clients with the intention of the AI model being able to automatically invoke them (with a human in the loop to grant approval).
 </Note>
 
-## 概述
+## Overview
 
-MCP中的工具允许服务器暴露可执行函数，这些函数既可以被客户端调用，也能被大模型用来执行操作。工具的核心特性包括：
+Tools in MCP allow servers to expose executable functions that can be invoked by clients and used by LLMs to perform actions. Key aspects of tools include:
 
-- **发现机制**：客户端可通过`tools/list`端点查看可用工具列表
-- **调用方式**：通过`tools/call`端点调用工具，服务器执行请求操作并返回结果
-- **灵活性**：工具功能范围涵盖从简单计算到复杂API交互
+- **Discovery**: Clients can list available tools through the `tools/list` endpoint
+- **Invocation**: Tools are called using the `tools/call` endpoint, where servers perform the requested operation and return results
+- **Flexibility**: Tools can range from simple calculations to complex API interactions
 
-与[资源](/docs/concepts/resources)类似，工具通过唯一名称标识并可包含使用说明。但与资源不同，工具代表的是可以修改状态或与外部系统交互的动态操作。
+Like [resources](/docs/concepts/resources), tools are identified by unique names and can include descriptions to guide their usage. However, unlike resources, tools represent dynamic operations that can modify state or interact with external systems.
 
-## 工具定义结构
+## Tool definition structure
 
-每个工具的定义包含以下结构：
+Each tool is defined with the following structure:
 
 ```typescript
 {
@@ -41,9 +41,10 @@ MCP中的工具允许服务器暴露可执行函数，这些函数既可以被�
 }
 ```
 
-## 工具实现
+## Implementing tools
 
-以下是MCP服务器实现基础工具的示例：
+Here's an example of implementing a basic tool in an MCP server:
+
 <Tabs>
   <Tab title="TypeScript">
     ```typescript
@@ -127,13 +128,13 @@ MCP中的工具允许服务器暴露可执行函数，这些函数既可以被�
   </Tab>
 </Tabs>
 
-## 工具模式示例
+## Example tool patterns
 
-服务器可提供的典型工具类型示例：
+Here are some examples of types of tools that a server could provide:
 
-### 系统操作类
+### System operations
 
-与本地系统交互的工具：
+Tools that interact with the local system:
 
 ```typescript
 {
@@ -149,9 +150,9 @@ MCP中的工具允许服务器暴露可执行函数，这些函数既可以被�
 }
 ```
 
-### API集成类
+### API integrations
 
-封装外部API的工具：
+Tools that wrap external APIs:
 
 ```typescript
 {
@@ -168,9 +169,9 @@ MCP中的工具允许服务器暴露可执行函数，这些函数既可以被�
 }
 ```
 
-### 数据处理类
+### Data processing
 
-数据转换与分析工具：
+Tools that transform or analyze data:
 
 ```typescript
 {
@@ -191,66 +192,67 @@ MCP中的工具允许服务器暴露可执行函数，这些函数既可以被�
 }
 ```
 
-## 最佳实践
+## Best practices
 
-实现工具时建议：
+When implementing tools:
 
-1. 提供清晰、描述性的名称和说明
-2. 为参数使用详细的JSON Schema定义
-3. 在工具描述中包含使用示例
-4. 实现完善的错误处理和参数验证
-5. 对耗时操作提供进度报告
-6. 保持工具功能单一且原子化
-7. 规范返回值结构文档
-8. 设置合理超时机制
-9. 对资源密集型操作实施速率限制
-10. 记录工具使用日志以便监控调试
+1. Provide clear, descriptive names and descriptions
+2. Use detailed JSON Schema definitions for parameters
+3. Include examples in tool descriptions to demonstrate how the model should use them
+4. Implement proper error handling and validation
+5. Use progress reporting for long operations
+6. Keep tool operations focused and atomic
+7. Document expected return value structures
+8. Implement proper timeouts
+9. Consider rate limiting for resource-intensive operations
+10. Log tool usage for debugging and monitoring
 
-## 安全考量
+## Security considerations
 
-暴露工具时需注意：
+When exposing tools:
 
-### 输入验证
+### Input validation
 
-- 严格校验参数是否符合schema定义
-- 对文件路径和系统命令进行净化处理
-- 验证URL和外部标识符合法性
-- 检查参数大小和取值范围
-- 防范命令注入攻击
+- Validate all parameters against the schema
+- Sanitize file paths and system commands
+- Validate URLs and external identifiers
+- Check parameter sizes and ranges
+- Prevent command injection
 
-### 访问控制
+### Access control
 
-- 按需实施身份验证
-- 设置恰当的授权检查
-- 审计工具使用记录
-- 请求频率限制
-- 监控异常行为
+- Implement authentication where needed
+- Use appropriate authorization checks
+- Audit tool usage
+- Rate limit requests
+- Monitor for abuse
 
-### 错误处理
+### Error handling
 
-- 避免向客户端暴露内部错误细节
-- 记录安全相关错误日志
-- 正确处理超时情况
-- 出错后及时释放资源
-- 校验返回值有效性
+- Don't expose internal errors to clients
+- Log security-relevant errors
+- Handle timeouts appropriately
+- Clean up resources after errors
+- Validate return values
 
-## 工具发现与更新
+## Tool discovery and updates
 
-MCP支持动态工具发现机制：
+MCP supports dynamic tool discovery:
 
-1. 客户端可随时查询可用工具列表
-2. 服务器可通过`notifications/tools/list_changed`通知客户端工具变更
-3. 支持运行时动态添加/移除工具
-4. 工具定义可更新（需谨慎操作）
+1. Clients can list available tools at any time
+2. Servers can notify clients when tools change using `notifications/tools/list_changed`
+3. Tools can be added or removed during runtime
+4. Tool definitions can be updated (though this should be done carefully)
 
-## 错误处理
+## Error handling
 
-工具错误应在结果对象中返回，而非作为MCP协议级错误。这种方式允许大模型感知并可能处理错误。当工具发生错误时：
+Tool errors should be reported within the result object, not as MCP protocol-level errors. This allows the LLM to see and potentially handle the error. When a tool encounters an error:
 
-1. 将结果中的`isError`设为`true`
-2. 在`content`数组中包含错误详情
+1. Set `isError` to `true` in the result
+2. Include error details in the `content` array
 
-以下是工具错误处理的规范示例：
+Here's an example of proper error handling for tools:
+
 <Tabs>
   <Tab title="TypeScript">
     ```typescript
@@ -305,24 +307,24 @@ MCP支持动态工具发现机制：
   </Tab>
 </Tabs>
 
-该方案使大模型能感知错误发生，并可能采取纠正措施或请求人工干预。
+This approach allows the LLM to see that an error occurred and potentially take corrective action or request human intervention.
 
-## 工具注解
+## Tool annotations
 
-工具注解提供额外元数据，帮助客户端理解如何呈现和管理工具。这些注解是描述工具特性和影响的提示信息，但不应作为安全决策的唯一依据。
+Tool annotations provide additional metadata about a tool's behavior, helping clients understand how to present and manage tools. These annotations are hints that describe the nature and impact of a tool, but should not be relied upon for security decisions.
 
-### 注解用途
+### Purpose of tool annotations
 
-工具注解主要实现以下功能：
+Tool annotations serve several key purposes:
 
-1. 在不影响模型上下文的情况下提供UX特定信息
-2. 帮助客户端合理分类和呈现工具
-3. 传达工具可能产生的副作用
-4. 辅助开发直观的工具审批界面
+1. Provide UX-specific information without affecting model context
+2. Help clients categorize and present tools appropriately
+3. Convey information about a tool's potential side effects
+4. Assist in developing intuitive interfaces for tool approval
 
-### 可用注解类型
+### Available tool annotations
 
-MCP规范定义了以下工具注解：
+The MCP specification defines the following annotations for tools:
 
 | Annotation | Type | Default | Description |
 |------------|------|---------|-------------|
@@ -332,9 +334,9 @@ MCP规范定义了以下工具注解：
 | `idempotentHint` | boolean | false | If true, calling the tool repeatedly with the same arguments has no additional effect (only meaningful when `readOnlyHint` is false) |
 | `openWorldHint` | boolean | true | If true, the tool may interact with an "open world" of external entities |
 
-### 使用示例
+### Example usage
 
-以下是不同场景下的工具注解定义示例：
+Here's how to define tools with annotations for different scenarios:
 
 ```typescript
 // A read-only search tool
@@ -397,7 +399,8 @@ MCP规范定义了以下工具注解：
 }
 ```
 
-### 服务端实现集成
+### Integrating annotations in server implementation
+
 <Tabs>
   <Tab title="TypeScript">
     ```typescript
@@ -450,20 +453,24 @@ MCP规范定义了以下工具注解：
   </Tab>
 </Tabs>
 
-### 注解最佳实践
+### Best practices for tool annotations
 
-1. **准确描述副作用**：明确标注工具是否会修改环境以及修改是否具有破坏性
-2. **使用描述性标题**：提供清晰描述工具用途的人类可读标题
-3. **正确标记幂等性**：仅当相同参数重复调用确实无额外影响时才标记为幂等
-4. **设置开放/封闭系统提示**：指明工具交互的是封闭系统（如数据库）还是开放系统（如互联网）
-5. **牢记注解仅是提示**：ToolAnnotations中的所有属性均为提示信息，客户端不应仅基于注解做出安全关键决策
+1. **Be accurate about side effects**: Clearly indicate whether a tool modifies its environment and whether those modifications are destructive.
 
-## 工具测试
+2. **Use descriptive titles**: Provide human-friendly titles that clearly describe the tool's purpose.
 
-全面的MCP工具测试策略应包含：
+3. **Indicate idempotency properly**: Mark tools as idempotent only if repeated calls with the same arguments truly have no additional effect.
 
-- **功能测试**：验证工具在有效输入下的正确执行及无效输入的适当处理
-- **集成测试**：使用真实和模拟依赖测试工具与外部系统的交互
-- **安全测试**：验证身份认证、授权、输入净化和速率限制
-- **性能测试**：检查高负载下的行为表现、超时处理和资源清理
-- **错误处理**：确保工具通过MCP协议正确报告错误并清理资源
+4. **Set appropriate open/closed world hints**: Indicate whether a tool interacts with a closed system (like a database) or an open system (like the web).
+
+5. **Remember annotations are hints**: All properties in ToolAnnotations are hints and not guaranteed to provide a faithful description of tool behavior. Clients should never make security-critical decisions based solely on annotations.
+
+## Testing tools
+
+A comprehensive testing strategy for MCP tools should cover:
+
+- **Functional testing**: Verify tools execute correctly with valid inputs and handle invalid inputs appropriately
+- **Integration testing**: Test tool interaction with external systems using both real and mocked dependencies
+- **Security testing**: Validate authentication, authorization, input sanitization, and rate limiting
+- **Performance testing**: Check behavior under load, timeout handling, and resource cleanup
+- **Error handling**: Ensure tools properly report errors through the MCP protocol and clean up resources
