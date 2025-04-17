@@ -1,84 +1,84 @@
 ---
-title: Example Servers 
-description: 'A list of example servers and implementations'
+title: 示例 Server 实现 
+description: '展示各类示例服务器及实现方案'  
 ---
 
-This page showcases various Model Context Protocol (MCP) servers that demonstrate the protocol's capabilities and versatility. These servers enable Large Language Models (LLMs) to securely access tools and data sources.
+本页面展示了多种Model Context Protocol (MCP)服务器，这些案例充分体现了该协议的强大功能和灵活适用性。通过这类服务器，大模型能够安全地访问各类工具和数据源。
 
-## Reference implementations
+## 官方参考实现
 
-These official reference servers demonstrate core MCP features and SDK usage:
+以下官方参考服务器演示了MCP核心功能及SDK用法：
 
-### Data and file systems
-- **[Filesystem](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem)** - Secure file operations with configurable access controls
-- **[PostgreSQL](https://github.com/modelcontextprotocol/servers/tree/main/src/postgres)** - Read-only database access with schema inspection capabilities
-- **[SQLite](https://github.com/modelcontextprotocol/servers/tree/main/src/sqlite)** - Database interaction and business intelligence features
-- **[Google Drive](https://github.com/modelcontextprotocol/servers/tree/main/src/gdrive)** - File access and search capabilities for Google Drive
+### 数据与文件系统
+- **[Filesystem](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem)** - 支持配置访问控制的安全文件操作  
+- **[PostgreSQL](https://github.com/modelcontextprotocol/servers/tree/main/src/postgres)** - 具备模式探查能力的只读数据库访问  
+- **[SQLite](https://github.com/modelcontextprotocol/servers/tree/main/src/sqlite)** - 数据库交互与商业智能功能  
+- **[Google Drive](https://github.com/modelcontextprotocol/servers/tree/main/src/gdrive)** - Google Drive文件访问与搜索功能  
 
-### Development tools
-- **[Git](https://github.com/modelcontextprotocol/servers/tree/main/src/git)** - Tools to read, search, and manipulate Git repositories
-- **[GitHub](https://github.com/modelcontextprotocol/servers/tree/main/src/github)** - Repository management, file operations, and GitHub API integration
-- **[GitLab](https://github.com/modelcontextprotocol/servers/tree/main/src/gitlab)** - GitLab API integration enabling project management
-- **[Sentry](https://github.com/modelcontextprotocol/servers/tree/main/src/sentry)** - Retrieving and analyzing issues from Sentry.io
+### 开发工具
+- **[Git](https://github.com/modelcontextprotocol/servers/tree/main/src/git)** - 读取、搜索和操作Git仓库的工具集  
+- **[GitHub](https://github.com/modelcontextprotocol/servers/tree/main/src/github)** - 仓库管理、文件操作及GitHub API集成  
+- **[GitLab](https://github.com/modelcontextprotocol/servers/tree/main/src/gitlab)** - 支持项目管理的GitLab API集成  
+- **[Sentry](https://github.com/modelcontextprotocol/servers/tree/main/src/sentry)** - 从Sentry.io获取并分析问题  
 
-### Web and browser automation
-- **[Brave Search](https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search)** - Web and local search using Brave's Search API
-- **[Fetch](https://github.com/modelcontextprotocol/servers/tree/main/src/fetch)** - Web content fetching and conversion optimized for LLM usage
-- **[Puppeteer](https://github.com/modelcontextprotocol/servers/tree/main/src/puppeteer)** - Browser automation and web scraping capabilities
+### 网页与浏览器自动化
+- **[Brave Search](https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search)** - 使用Brave搜索API进行网页及本地搜索  
+- **[Fetch](https://github.com/modelcontextprotocol/servers/tree/main/src/fetch)** - 为大模型优化的网页内容获取与转换工具  
+- **[Puppeteer](https://github.com/modelcontextprotocol/servers/tree/main/src/puppeteer)** - 浏览器自动化与网页抓取功能  
 
-### Productivity and communication
-- **[Slack](https://github.com/modelcontextprotocol/servers/tree/main/src/slack)** - Channel management and messaging capabilities
-- **[Google Maps](https://github.com/modelcontextprotocol/servers/tree/main/src/google-maps)** - Location services, directions, and place details
-- **[Memory](https://github.com/modelcontextprotocol/servers/tree/main/src/memory)** - Knowledge graph-based persistent memory system
+### 效率与通讯
+- **[Slack](https://github.com/modelcontextprotocol/servers/tree/main/src/slack)** - 频道管理与消息收发功能  
+- **[Google Maps](https://github.com/modelcontextprotocol/servers/tree/main/src/google-maps)** - 定位服务、路线导航与地点详情  
+- **[Memory](https://github.com/modelcontextprotocol/servers/tree/main/src/memory)** - 基于知识图谱的持久化记忆系统  
 
-### AI and specialized tools
-- **[EverArt](https://github.com/modelcontextprotocol/servers/tree/main/src/everart)** - AI image generation using various models
-- **[Sequential Thinking](https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking)** - Dynamic problem-solving through thought sequences
-- **[AWS KB Retrieval](https://github.com/modelcontextprotocol/servers/tree/main/src/aws-kb-retrieval-server)** - Retrieval from AWS Knowledge Base using Bedrock Agent Runtime
+### AI与专业工具
+- **[EverArt](https://github.com/modelcontextprotocol/servers/tree/main/src/everart)** - 支持多种模型的AI图像生成  
+- **[Sequential Thinking](https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking)** - 通过思维序列实现动态问题求解  
+- **[AWS KB Retrieval](https://github.com/modelcontextprotocol/servers/tree/main/src/aws-kb-retrieval-server)** - 通过Bedrock Agent Runtime从AWS知识库检索信息  
 
-## Official integrations
+## 官方集成方案
 
-These MCP servers are maintained by companies for their platforms:
+以下MCP服务器由各平台所属企业维护：
 
-- **[Axiom](https://github.com/axiomhq/mcp-server-axiom)** - Query and analyze logs, traces, and event data using natural language
-- **[Browserbase](https://github.com/browserbase/mcp-server-browserbase)** - Automate browser interactions in the cloud
-- **[Cloudflare](https://github.com/cloudflare/mcp-server-cloudflare)** - Deploy and manage resources on the Cloudflare developer platform
-- **[E2B](https://github.com/e2b-dev/mcp-server)** - Execute code in secure cloud sandboxes
-- **[Neon](https://github.com/neondatabase/mcp-server-neon)** - Interact with the Neon serverless Postgres platform
-- **[Obsidian Markdown Notes](https://github.com/calclavia/mcp-obsidian)** - Read and search through Markdown notes in Obsidian vaults
-- **[Qdrant](https://github.com/qdrant/mcp-server-qdrant/)** - Implement semantic memory using the Qdrant vector search engine
-- **[Raygun](https://github.com/MindscapeHQ/mcp-server-raygun)** - Access crash reporting and monitoring data
-- **[Search1API](https://github.com/fatwang2/search1api-mcp)** - Unified API for search, crawling, and sitemaps
-- **[Stripe](https://github.com/stripe/agent-toolkit)** - Interact with the Stripe API
-- **[Tinybird](https://github.com/tinybirdco/mcp-tinybird)** - Interface with the Tinybird serverless ClickHouse platform
-- **[Weaviate](https://github.com/weaviate/mcp-server-weaviate)** - Enable Agentic RAG through your Weaviate collection(s)
+- **[Axiom](https://github.com/axiomhq/mcp-server-axiom)** - 使用自然语言查询分析日志、追踪记录和事件数据  
+- **[Browserbase](https://github.com/browserbase/mcp-server-browserbase)** - 云端浏览器交互自动化  
+- **[Cloudflare](https://github.com/cloudflare/mcp-server-cloudflare)** - 在Cloudflare开发者平台部署管理资源  
+- **[E2B](https://github.com/e2b-dev/mcp-server)** - 在安全云沙箱中执行代码  
+- **[Neon](https://github.com/neondatabase/mcp-server-neon)** - 与Neon无服务器Postgres平台交互  
+- **[Obsidian Markdown Notes](https://github.com/calclavia/mcp-obsidian)** - 读取和搜索Obsidian库中的Markdown笔记  
+- **[Qdrant](https://github.com/qdrant/mcp-server-qdrant/)** - 使用Qdrant向量搜索引擎实现语义记忆  
+- **[Raygun](https://github.com/MindscapeHQ/mcp-server-raygun)** - 访问崩溃报告与监控数据  
+- **[Search1API](https://github.com/fatwang2/search1api-mcp)** - 统一搜索、爬取和站点地图API  
+- **[Stripe](https://github.com/stripe/agent-toolkit)** - 与Stripe API交互  
+- **[Tinybird](https://github.com/tinybirdco/mcp-tinybird)** - 连接Tinybird无服务器ClickHouse平台  
+- **[Weaviate](https://github.com/weaviate/mcp-server-weaviate)** - 通过Weaviate集合实现智能RAG功能  
 
-## Community highlights
+## 社区精选
 
-A growing ecosystem of community-developed servers extends MCP's capabilities:
+不断壮大的社区开发服务器生态进一步扩展了MCP能力边界：
 
-- **[Docker](https://github.com/ckreiling/mcp-server-docker)** - Manage containers, images, volumes, and networks
-- **[Kubernetes](https://github.com/Flux159/mcp-server-kubernetes)** - Manage pods, deployments, and services
-- **[Linear](https://github.com/jerhadf/linear-mcp-server)** - Project management and issue tracking
-- **[Snowflake](https://github.com/datawiz168/mcp-snowflake-service)** - Interact with Snowflake databases
-- **[Spotify](https://github.com/varunneal/spotify-mcp)** - Control Spotify playback and manage playlists
-- **[Todoist](https://github.com/abhiz123/todoist-mcp-server)** - Task management integration
+- **[Docker](https://github.com/ckreiling/mcp-server-docker)** - 管理容器、镜像、卷和网络  
+- **[Kubernetes](https://github.com/Flux159/mcp-server-kubernetes)** - 管理Pod、部署和服务  
+- **[Linear](https://github.com/jerhadf/linear-mcp-server)** - 项目管理与问题追踪  
+- **[Snowflake](https://github.com/datawiz168/mcp-snowflake-service)** - 与Snowflake数据库交互  
+- **[Spotify](https://github.com/varunneal/spotify-mcp)** - 控制Spotify播放与管理歌单  
+- **[Todoist](https://github.com/abhiz123/todoist-mcp-server)** - 任务管理集成  
 
-> **Note:** Community servers are untested and should be used at your own risk. They are not affiliated with or endorsed by Anthropic.
+> **注意：** 社区服务器未经测试，使用风险自负。这些项目与Anthropic无任何关联或背书。
 
-For a complete list of community servers, visit the [MCP Servers Repository](https://github.com/modelcontextprotocol/servers).
+完整社区服务器列表请访问[MCP服务器仓库](https://github.com/modelcontextprotocol/servers)。
 
-## Getting started
+## 快速开始
 
-### Using reference servers
+### 使用参考服务器
 
-TypeScript-based servers can be used directly with `npx`:
+基于TypeScript的服务器可直接配合`npx`使用：
 
 ```bash
 npx -y @modelcontextprotocol/server-memory
 ```
 
-Python-based servers can be used with `uvx` (recommended) or `pip`:
+基于Python的服务器推荐使用`uvx`或`pip`：
 
 ```bash
 # Using uvx
@@ -89,9 +89,9 @@ pip install mcp-server-git
 python -m mcp_server_git
 ```
 
-### Configuring with Claude
+### 配置Claude
 
-To use an MCP server with Claude, add it to your configuration:
+要在Claude中使用MCP服务器，请将其添加至配置：
 
 ```json
 {
@@ -115,13 +115,13 @@ To use an MCP server with Claude, add it to your configuration:
 }
 ```
 
-## Additional resources
+## 扩展资源
 
-- [MCP Servers Repository](https://github.com/modelcontextprotocol/servers) - Complete collection of reference implementations and community servers
-- [Awesome MCP Servers](https://github.com/punkpeye/awesome-mcp-servers) - Curated list of MCP servers
-- [MCP CLI](https://github.com/wong2/mcp-cli) - Command-line inspector for testing MCP servers
-- [MCP Get](https://mcp-get.com) - Tool for installing and managing MCP servers
-- [Supergateway](https://github.com/supercorp-ai/supergateway) - Run MCP stdio servers over SSE
-- [Zapier MCP](https://zapier.com/mcp) - MCP Server with over 7,000+ apps and 30,000+ actions
+- [MCP服务器仓库](https://github.com/modelcontextprotocol/servers) - 参考实现与社区服务器的完整集合  
+- [Awesome MCP Servers](https://github.com/punkpeye/awesome-mcp-servers) - 精选MCP服务器清单  
+- [MCP CLI](https://github.com/wong2/mcp-cli) - 测试MCP服务器的命令行检查工具  
+- [MCP Get](https://mcp-get.com) - MCP服务器安装管理工具  
+- [Supergateway](https://github.com/supercorp-ai/supergateway) - 通过SSE运行MCP标准IO服务器  
+- [Zapier MCP](https://zapier.com/mcp) - 支持7000+应用和30000+操作的MCP服务器  
 
-Visit our [GitHub Discussions](https://github.com/orgs/modelcontextprotocol/discussions) to engage with the MCP community.
+欢迎访问[GitHub Discussions](https://github.com/orgs/modelcontextprotocol/discussions)与MCP社区互动。

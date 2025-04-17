@@ -314,11 +314,20 @@ async def process_file(file_path, semaphore):
             traceback.print_exc()
 
 def find_md_files():
-    """查找当前目录及子目录中的所有MDX和MD文件"""
+    """查找当前目录及子目录中的所有 .mdx 和 .md 文件，排除 ./docs/ref 目录"""
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    mdx_files = glob.glob(os.path.join(current_dir, '**', '*.mdx'), recursive=True)
-    md_files = glob.glob(os.path.join(current_dir, '**', '*.md'), recursive=True)
-    return mdx_files + md_files
+    excluded_dir = os.path.join(current_dir, 'docs', 'sdk')
+    matched_files = []
+
+    for root, _, files in os.walk(current_dir):
+        # 排除 ./docs/ref 目录
+        if os.path.commonpath([root, excluded_dir]) == excluded_dir:
+            continue
+        for file in files:
+            if file.endswith(('.md', '.mdx')):
+                matched_files.append(os.path.join(root, file))
+
+    return matched_files
 
 async def main():
     md_files = find_md_files()

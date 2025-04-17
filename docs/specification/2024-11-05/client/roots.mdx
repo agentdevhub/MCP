@@ -1,33 +1,24 @@
 ---
-title: Roots
+title: 根目录
 type: docs
 weight: 40
 ---
 
-<Info>**Protocol Revision**: 2024-11-05</Info>
+<Info>**协议修订版本**：2024-11-05</Info>
 
-The Model Context Protocol (MCP) provides a standardized way for clients to expose
-filesystem "roots" to servers. Roots define the boundaries of where servers can operate
-within the filesystem, allowing them to understand which directories and files they have
-access to. Servers can request the list of roots from supporting clients and receive
-notifications when that list changes.
+模型上下文协议（MCP）为客户端向服务端暴露文件系统"根目录"提供了标准化方案。根目录定义了服务端在文件系统中的操作边界，使其能够明确可访问的目录和文件范围。支持该功能的客户端可应服务端请求提供根目录列表，并在列表变更时发送通知。
 
-## User Interaction Model
+## 用户交互模型
 
-Roots in MCP are typically exposed through workspace or project configuration interfaces.
+MCP中的根目录通常通过工作区或项目配置界面进行设置。
 
-For example, implementations could offer a workspace/project picker that allows users to
-select directories and files the server should have access to. This can be combined with
-automatic workspace detection from version control systems or project files.
+例如，具体实现可提供工作区/项目选择器，允许用户指定服务端应有权访问的目录和文件。该功能可与版本控制系统或项目文件的自动工作区检测结合使用。
 
-However, implementations are free to expose roots through any interface pattern that
-suits their needs&mdash;the protocol itself does not mandate any specific user
-interaction model.
+但协议本身并不强制要求特定的用户交互模式——实现方可根据需求自由设计根目录的暴露方式。
 
-## Capabilities
+## 能力声明
 
-Clients that support roots **MUST** declare the `roots` capability during
-[initialization](/specification/2024-11-05/basic/lifecycle#initialization):
+支持根目录功能的客户端**必须**在[初始化阶段](/specification/2024-11-05/basic/lifecycle#initialization)声明`roots`能力：
 
 ```json
 {
@@ -39,16 +30,15 @@ Clients that support roots **MUST** declare the `roots` capability during
 }
 ```
 
-`listChanged` indicates whether the client will emit notifications when the list of roots
-changes.
+`listChanged`用于标识客户端是否会在根目录列表变更时发送通知。
 
-## Protocol Messages
+## 协议消息
 
-### Listing Roots
+### 获取根目录列表
 
-To retrieve roots, servers send a `roots/list` request:
+服务端通过发送`roots/list`请求获取根目录信息：
 
-**Request:**
+**请求：**
 
 ```json
 {
@@ -58,7 +48,7 @@ To retrieve roots, servers send a `roots/list` request:
 }
 ```
 
-**Response:**
+**响应：**
 
 ```json
 {
@@ -75,9 +65,9 @@ To retrieve roots, servers send a `roots/list` request:
 }
 ```
 
-### Root List Changes
+### 根目录列表变更
 
-When roots change, clients that support `listChanged` **MUST** send a notification:
+当根目录发生变化时，支持`listChanged`的客户端**必须**发送通知：
 
 ```json
 {
@@ -86,7 +76,7 @@ When roots change, clients that support `listChanged` **MUST** send a notificati
 }
 ```
 
-## Message Flow
+## 消息流程
 
 ```mermaid
 sequenceDiagram
@@ -103,19 +93,17 @@ sequenceDiagram
     Client-->>Server: Updated roots
 ```
 
-## Data Types
+## 数据类型
 
-### Root
+### 根目录定义
 
-A root definition includes:
+每个根目录包含以下属性：
+- `uri`：根目录唯一标识符。在当前协议中**必须**为`file://`格式的URI
+- `name`：可选的人类可读名称（用于显示）
 
-- `uri`: Unique identifier for the root. This **MUST** be a `file://` URI in the current
-  specification.
-- `name`: Optional human-readable name for display purposes.
+不同场景下的根目录示例：
 
-Example roots for different use cases:
-
-#### Project Directory
+#### 项目目录
 
 ```json
 {
@@ -124,7 +112,7 @@ Example roots for different use cases:
 }
 ```
 
-#### Multiple Repositories
+#### 多代码仓库
 
 ```json
 [
@@ -139,14 +127,13 @@ Example roots for different use cases:
 ]
 ```
 
-## Error Handling
+## 错误处理
 
-Clients **SHOULD** return standard JSON-RPC errors for common failure cases:
+客户端**应当**针对常见错误返回标准JSON-RPC错误码：
+- 客户端不支持根目录功能：`-32601`（方法未找到）
+- 内部错误：`-32603`
 
-- Client does not support roots: `-32601` (Method not found)
-- Internal errors: `-32603`
-
-Example error:
+错误示例：
 
 ```json
 {
@@ -162,31 +149,29 @@ Example error:
 }
 ```
 
-## Security Considerations
+## 安全考量
 
-1. Clients **MUST**:
+1. 客户端**必须**：
+   - 仅暴露具有适当权限的根目录
+   - 验证所有根目录URI以防止路径遍历攻击
+   - 实施完善的访问控制机制
+   - 持续监控根目录可访问性
 
-   - Only expose roots with appropriate permissions
-   - Validate all root URIs to prevent path traversal
-   - Implement proper access controls
-   - Monitor root accessibility
+2. 服务端**应当**：
+   - 处理根目录不可用的情况
+   - 在操作中严格遵守根目录边界
+   - 根据提供的根目录验证所有路径
 
-2. Servers **SHOULD**:
-   - Handle cases where roots become unavailable
-   - Respect root boundaries during operations
-   - Validate all paths against provided roots
+## 实现指南
 
-## Implementation Guidelines
+1. 客户端**应当**：
+   - 在向服务端暴露根目录前获取用户确认
+   - 提供清晰的根目录管理界面
+   - 暴露前验证根目录可访问性
+   - 监控根目录变更
 
-1. Clients **SHOULD**:
-
-   - Prompt users for consent before exposing roots to servers
-   - Provide clear user interfaces for root management
-   - Validate root accessibility before exposing
-   - Monitor for root changes
-
-2. Servers **SHOULD**:
-   - Check for roots capability before usage
-   - Handle root list changes gracefully
-   - Respect root boundaries in operations
-   - Cache root information appropriately
+2. 服务端**应当**：
+   - 使用前检查根目录支持能力
+   - 优雅处理根目录列表变更
+   - 在操作中尊重根目录边界
+   - 合理缓存根目录信息
